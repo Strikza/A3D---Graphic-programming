@@ -16,14 +16,6 @@ public class Sphere {
     private float phi;
     private float theta;
 
-    private float anglex;
-    private float angley;
-    private float anglez;
-
-    private float posx;
-    private float posy;
-    private float posz;
-
     private float[] vertexpos;
     private short[] triangles;
     private int vertexIndex;
@@ -41,14 +33,6 @@ public class Sphere {
 
         phi = 360/(float)nb_quarter;
         theta = 180/(float)(nb_slice);
-
-        anglex = 0.F;
-        angley = 0.F;
-        anglez = 0.F;
-
-        posx = 0.F;
-        posy = 0.F;
-        posz = 0.F;
 
         modelviewsphere=new float[16];
 
@@ -69,7 +53,7 @@ public class Sphere {
         float y_temp;
         float z_temp;
 
-        for(float s = -90.F + theta; s <= 90.F-theta; s += theta) {
+        for (float s = -90.F + theta; s <= 90.F-theta; s += theta) {
 
             for (float q = 0; q<360; q += phi) {
 
@@ -113,7 +97,9 @@ public class Sphere {
 
         int i_triangle = 0;
         for(int i=0; i<(nbVertices-nb_quarter-2); ++i){
+
             if((i+1)%nb_quarter == 0){
+
                 triangles[i_triangle] = (short)(i);
                 triangles[i_triangle+1] = (short)(i-nb_quarter+1);
                 triangles[i_triangle+2] = (short)(i+nb_quarter);
@@ -122,6 +108,7 @@ public class Sphere {
                 triangles[i_triangle+5] = (short)(i-nb_quarter+1);
             }
             else{
+
                 triangles[i_triangle] = (short)i;
                 triangles[i_triangle+1] = (short)(i+1);
                 triangles[i_triangle+2] = (short)(i+nb_quarter);
@@ -129,6 +116,7 @@ public class Sphere {
                 triangles[i_triangle+4] = (short)(i+nb_quarter);
                 triangles[i_triangle+5] = (short)(i+1);
             }
+
             i_triangle+=6;
         }
 
@@ -140,9 +128,11 @@ public class Sphere {
             triangles[i_triangle + 1] = (short) i;
 
             if(i == 0){
+
                 triangles[i_triangle+2] = (short) (i+nb_quarter-1);
             }
             else {
+
                 triangles[i_triangle+2] = (short) (i - 1);
             }
 
@@ -156,19 +146,16 @@ public class Sphere {
             triangles[i_triangle + 2] = (short) i;
 
             if(i == nbVertices-nb_quarter-2){
+
                 triangles[i_triangle+1] = (short) (nbVertices-3);
             }
             else {
+
                 triangles[i_triangle+1] = (short) (i-1);
             }
 
             i_triangle +=3;
         }
-    }
-
-    public void step(){
-
-        angley += 0.5F;
     }
 
     /**
@@ -182,8 +169,12 @@ public class Sphere {
         fb.position(0);
 
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, glposbuffer_vertex);
-        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, vertexpos.length * Float.BYTES,
-                fb, GLES20.GL_STATIC_DRAW);
+        GLES20.glBufferData(
+                GLES20.GL_ARRAY_BUFFER,
+                vertexpos.length * Float.BYTES,
+                fb,
+                GLES20.GL_STATIC_DRAW
+        );
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER,0);
     }
 
@@ -205,8 +196,12 @@ public class Sphere {
         sb.position(0);
 
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, glelementbuffer);
-        GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER, s_array.length * Short.BYTES,
-                sb, GLES20.GL_STATIC_DRAW);
+        GLES20.glBufferData(
+                GLES20.GL_ELEMENT_ARRAY_BUFFER,
+                s_array.length * Short.BYTES,
+                sb,
+                GLES20.GL_STATIC_DRAW
+        );
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER,0);
     }
 
@@ -222,30 +217,27 @@ public class Sphere {
         send_buffer_to_GPU(buffers, spherebufferS, triangles,  glelementbuffer_sphere);
     }
 
-    public void translate(final float[] modelviewmatrix, float x, float y, float z){
+    public void setModelView(final float[] modelviewmatrix){
 
-        posx += x;
-        posy += y;
-        posz += z;
-        Matrix.translateM(modelviewsphere,0, modelviewmatrix, 0, x, y, z);
+        System.arraycopy(modelviewmatrix, 0, modelviewsphere, 0, modelviewmatrix.length);
     }
 
-    public void rotate(final float[] modelviewmatrix, int mOffset, float angle, float x, float y, float z){
+    public void translate(float x, float y, float z){
 
-        Matrix.rotateM(modelviewsphere,0,angley,0.F,1.0F,0.0F);
-        Matrix.rotateM(modelviewsphere, mOffset, angle, x, y, z);
+        Matrix.translateM(modelviewsphere,0, x, y, z);
     }
 
-    public void scale(final float[] modelviewmatrix, int mOffset, float x, float y, float z){
+    public void rotate(float angle, float x, float y, float z){
 
-        Matrix.scaleM(modelviewsphere, mOffset, x, y, z);
-        Matrix.translateM(modelviewsphere, mOffset, 0.F, posy*y - posy, 0.F);
-
-        posy *= y;
+        Matrix.rotateM(modelviewsphere, 0, angle, x, y, z);
     }
 
-    public void draw(final NoLightShaders shaders, final float[] modelviewmatrix){
+    public void scale(float x, float y, float z){
 
+        Matrix.scaleM(modelviewsphere, 0, x, y, z);
+    }
+
+    public void draw(final NoLightShaders shaders){
 
         shaders.setModelViewMatrix(modelviewsphere);
 
@@ -259,7 +251,9 @@ public class Sphere {
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, nbTriangles *3, GLES20.GL_UNSIGNED_SHORT, 0);
         GLES20.glDisable(GLES20.GL_POLYGON_OFFSET_FILL);
         shaders.setColor(MyGLRenderer.black);
+
         for(int i=0; i<triangles.length; i+=3){
+
             GLES20.glDrawElements(GLES20.GL_LINE_LOOP, 3, GLES20.GL_UNSIGNED_SHORT, i*Short.BYTES);
         }
 

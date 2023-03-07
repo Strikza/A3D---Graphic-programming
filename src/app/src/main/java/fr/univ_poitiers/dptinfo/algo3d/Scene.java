@@ -49,7 +49,9 @@ public class Scene
     /**
      * Sphere object
      */
-    Sphere yellow_sphere;
+    Ball ball;
+    Ball ball2;
+    Ball ball3;
 
 
     /**
@@ -95,7 +97,9 @@ public class Scene
         this.ceiling = new Quad(P3_t, P2_t, P1_t, P0_t);
 
         room = new Room();
-        yellow_sphere = new Sphere((short) 20, (short) 20);
+        ball = new Ball(1.F, 0.F, -6.F);
+        ball2 = new Ball(1.F, -1.8F, -1.8F);
+        ball3 = new Ball(1.F, 1.8F, -1.8F);
     }
 
 
@@ -106,7 +110,9 @@ public class Scene
     public void initGraphics(MyGLRenderer renderer)
     {
         room.initGraphics();
-        yellow_sphere.initGraphics();
+        ball.initGraphic();
+        ball2.initGraphic();
+        ball3.initGraphic();
 
         MainActivity.log("Initializing graphics");
         // Set the background frame color
@@ -120,10 +126,7 @@ public class Scene
         MainActivity.log("Graphics initialized");
     }
 
-    public void step()
-    {
-        yellow_sphere.step();
-    }
+    public void step() {}
 
 
     /**
@@ -148,7 +151,10 @@ public class Scene
         Matrix.translateM(modelviewmatrix,0,posx,0.F,posz);
         Matrix.translateM(modelviewmatrix,0,0.F,-1.6F,0.F);
 
-        shaders.setColor(MyGLRenderer.blue);
+        // Set ModelView for objects
+        ball.setModelView(modelviewmatrix);
+        ball2.setModelView(modelviewmatrix);
+        ball3.setModelView(modelviewmatrix);
 
         shaders.setModelViewMatrix(modelviewmatrix);
 
@@ -160,12 +166,6 @@ public class Scene
         shaders.setColor(MyGLRenderer.magenta);
         room.drawWall(shaders);
 
-        shaders.setColor(MyGLRenderer.yellow);
-        yellow_sphere.translate(modelviewmatrix, 0.F, 1.F, -6.F);
-        yellow_sphere.scale(modelviewmatrix, 0, 1F, 1F, 1F);
-        //yellow_sphere.scale(modelviewmatrix, 0, 4.F, 4.F, 4.F);
-        yellow_sphere.rotate(modelviewmatrix, 0, 90, 1.F, 0.F, 0.F);
-        yellow_sphere.draw(shaders, modelviewmatrix);
 
         // 2nd room
         Matrix.rotateM(modelviewmatrix,0,180.F,0.0F,1.0F,0.0F);
@@ -179,6 +179,14 @@ public class Scene
         room.drawCeiling(shaders);
         shaders.setColor(MyGLRenderer.gray);
         room.drawWall(shaders);
+
+        // Balls
+        shaders.setColor(MyGLRenderer.yellow);
+        ball.draw(shaders);
+        shaders.setColor(MyGLRenderer.cyan);
+        ball2.draw(shaders);
+        shaders.setColor(MyGLRenderer.orange);
+        ball3.draw(shaders);
 
         MainActivity.log("Rendering terminated.");
     }
