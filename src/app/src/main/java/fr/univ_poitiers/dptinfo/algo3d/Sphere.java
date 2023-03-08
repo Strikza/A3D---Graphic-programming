@@ -10,8 +10,8 @@ import java.nio.ShortBuffer;
 
 public class Sphere {
 
-    private short nb_slice;
-    private short nb_quarter;
+    private int nb_slice;
+    private int nb_quarter;
 
     private float phi;
     private float theta;
@@ -27,7 +27,7 @@ public class Sphere {
 
     private float[] modelviewsphere;
 
-    Sphere(short slice, short quarter){
+    Sphere(int slice, int quarter){
         nb_slice = slice;
         nb_quarter = quarter;
 

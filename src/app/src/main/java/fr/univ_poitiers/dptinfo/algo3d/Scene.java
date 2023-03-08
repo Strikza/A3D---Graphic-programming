@@ -96,10 +96,11 @@ public class Scene
         // Create the ceiling of the room
         this.ceiling = new Quad(P3_t, P2_t, P1_t, P0_t);
 
+        // Construct objects
         room = new Room();
-        ball = new Ball(1.F, 0.F, -6.F);
+        ball = new Ball(1.2F, 0.F, -6.F);
         ball2 = new Ball(1.F, -1.8F, -1.8F);
-        ball3 = new Ball(1.F, 1.8F, -1.8F);
+        ball3 = new Ball(0.5F, 1.8F, -1.8F);
     }
 
 
@@ -144,21 +145,22 @@ public class Scene
 
         // Place viewer in the right position and orientation
         Matrix.setIdentityM(modelviewmatrix,0);
-        // setRotateM instead of rotateM in the next instruction would avoid this initialization...
 
+        // setRotateM instead of rotateM in the next instruction would avoid this initialization...
         Matrix.rotateM(modelviewmatrix,0,anglex,1.0F,0.0F,0.0F);
         Matrix.rotateM(modelviewmatrix,0,angley,0.F,1.0F,0.0F);
         Matrix.translateM(modelviewmatrix,0,posx,0.F,posz);
         Matrix.translateM(modelviewmatrix,0,0.F,-1.6F,0.F);
 
+
         // Set ModelView for objects
+        room.setModelView(modelviewmatrix);
         ball.setModelView(modelviewmatrix);
         ball2.setModelView(modelviewmatrix);
         ball3.setModelView(modelviewmatrix);
 
-        shaders.setModelViewMatrix(modelviewmatrix);
 
-        // Draw walls, floor and ceil in selected colors
+        // 1st room
         shaders.setColor(MyGLRenderer.white);
         room.drawFloor(shaders);
         shaders.setColor(MyGLRenderer.darkgray);
@@ -168,10 +170,8 @@ public class Scene
 
 
         // 2nd room
-        Matrix.rotateM(modelviewmatrix,0,180.F,0.0F,1.0F,0.0F);
-        Matrix.translateM(modelviewmatrix,0,0.F,0.F,6.F);
-
-        shaders.setModelViewMatrix(modelviewmatrix);
+        room.rotate(180.F,0.0F,1.0F,0.0F);
+        room.translate(0.F,0.F,6.F);
 
         shaders.setColor(MyGLRenderer.white);
         room.drawFloor(shaders);

@@ -1,6 +1,8 @@
 package fr.univ_poitiers.dptinfo.algo3d;
 
 import android.opengl.GLES20;
+import android.opengl.Matrix;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -24,6 +26,8 @@ public class Room {
     private int glelementbuffer_ceiling;
     private int glelementbuffer_wall;
 
+    private float[] modelviewroom;
+
     /**
      * Declaration of the 6 buffers needed
      */
@@ -43,6 +47,8 @@ public class Room {
 
 
     public Room(){
+
+        modelviewroom=new float[16];
 
         // Floor vertexes
         Vec3f P0_f = new Vec3f(-3.f, 0.f, 3.f);
@@ -307,9 +313,31 @@ public class Room {
         send_buffer_to_GPU(buffers, linebufferS, edge_wall, glelementbuffer_line);
     }
 
+    public void setModelView(final float[] modelviewmatrix){
+
+        System.arraycopy(modelviewmatrix, 0, modelviewroom, 0, modelviewmatrix.length);
+    }
+
+    public void translate(float x, float y, float z){
+
+        Matrix.translateM(modelviewroom,0, x, y, z);
+    }
+
+    public void rotate(float angle, float x, float y, float z){
+
+        Matrix.rotateM(modelviewroom, 0, angle, x, y, z);
+    }
+
+    public void scale(float x, float y, float z){
+
+        Matrix.scaleM(modelviewroom, 0, x, y, z);
+    }
+
 
     public void drawFloor(final NoLightShaders shaders)
     {
+        shaders.setModelViewMatrix(modelviewroom);
+
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, glposbuffer_vertex);
         shaders.setPositionsPointer(3,GLES20.GL_FLOAT);
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, glelementbuffer_floor);
@@ -321,6 +349,8 @@ public class Room {
 
     public void drawCeiling(final NoLightShaders shaders)
     {
+        shaders.setModelViewMatrix(modelviewroom);
+
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, glposbuffer_vertex);
         shaders.setPositionsPointer(3,GLES20.GL_FLOAT);
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, glelementbuffer_ceiling);
@@ -332,6 +362,8 @@ public class Room {
 
     public void drawWall(final NoLightShaders shaders)
     {
+        shaders.setModelViewMatrix(modelviewroom);
+
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, glposbuffer_vertex);
         shaders.setPositionsPointer(3,GLES20.GL_FLOAT);
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, glelementbuffer_wall);
