@@ -266,12 +266,11 @@ public class Room {
 
     /**
      * Global function to send buffers to GPU
-     * @param buffers
      * @param sb
      * @param s_array
      * @param glelementbuffer
      */
-    private void send_buffer_to_GPU(int[] buffers, ShortBuffer sb, short[] s_array, int glelementbuffer){
+    private void send_buffer_to_GPU(ShortBuffer sb, short[] s_array, int glelementbuffer){
 
         ByteBuffer bytebuf;
 
@@ -299,25 +298,25 @@ public class Room {
         // Floor //
 
         glelementbuffer_floor =buffers[1];
-        send_buffer_to_GPU(buffers, floorbufferS, triangles_floor,  glelementbuffer_floor);
+        send_buffer_to_GPU(floorbufferS, triangles_floor,  glelementbuffer_floor);
 
 
         // Ceiling //
 
         glelementbuffer_ceiling =buffers[2];
-        send_buffer_to_GPU(buffers, ceilingbufferS, triangles_ceiling, glelementbuffer_ceiling);
+        send_buffer_to_GPU(ceilingbufferS, triangles_ceiling, glelementbuffer_ceiling);
 
 
         // Wall //
 
         glelementbuffer_wall =buffers[3];
-        send_buffer_to_GPU(buffers, wallbufferS, triangles_wall, glelementbuffer_wall);
+        send_buffer_to_GPU(wallbufferS, triangles_wall, glelementbuffer_wall);
 
 
         // Line //
 
         glelementbuffer_line =buffers[4];
-        send_buffer_to_GPU(buffers, linebufferS, edge_wall, glelementbuffer_line);
+        send_buffer_to_GPU(linebufferS, edge_wall, glelementbuffer_line);
     }
 
     public void setModelView(final float[] modelviewmatrix){
@@ -377,10 +376,11 @@ public class Room {
 
         GLES20.glPolygonOffset(2.F,4.F);
         GLES20.glEnable(GLES20.GL_POLYGON_OFFSET_FILL);
+
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, nbvertices_wall, GLES20.GL_UNSIGNED_SHORT, 0);
         GLES20.glDisable(GLES20.GL_POLYGON_OFFSET_FILL);
-
         shaders.setColor(MyGLRenderer.black);
+
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, glelementbuffer_line);
         GLES20.glDrawElements(GLES20.GL_LINES, nbindexlines,GLES20.GL_UNSIGNED_SHORT, 0);
 

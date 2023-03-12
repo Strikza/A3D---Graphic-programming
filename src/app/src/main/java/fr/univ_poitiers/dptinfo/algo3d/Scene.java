@@ -55,12 +55,15 @@ public class Scene
         posx = 0.F;
         posz = 0.F;
 
+        Ball.setQUARTER(50);
+        Ball.setSLICE(50);
+
         // Construct objects
         room = new Room();
         ball = new Ball(1.2F, 0.F, -6.F);
         ball2 = new Ball(1.F, -1.8F, -1.8F);
         ball3 = new Ball(0.5F, 1.8F, -1.8F);
-        ldOBJ = new LoaderOBJ(context, "geometrical_face.obj");
+        ldOBJ = new LoaderOBJ(context, "cow.obj");
     }
 
 

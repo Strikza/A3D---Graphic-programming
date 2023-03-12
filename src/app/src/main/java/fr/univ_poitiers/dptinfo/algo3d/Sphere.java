@@ -162,40 +162,6 @@ public class Sphere {
         }
     }
 
-
-    public void initGraphics(){
-
-        int[] buffers = new int[2]; // Besoin d’un buffer sur la carte graphique
-        GLES20.glGenBuffers(2, buffers, 0); // Allocations des buffers
-
-        glposbuffer_vertex =buffers[0];
-        send_vertexes_to_GPU();
-
-        glelementbuffer_sphere =buffers[1];
-        send_buffer_to_GPU(buffers, spherebufferS, triangles,  glelementbuffer_sphere);
-    }
-
-    public void setModelView(final float[] modelviewmatrix){
-
-        System.arraycopy(modelviewmatrix, 0, modelviewsphere, 0, modelviewmatrix.length);
-    }
-
-    public void translate(float x, float y, float z){
-
-        Matrix.translateM(modelviewsphere,0, x, y, z);
-    }
-
-    public void rotate(float angle, float x, float y, float z){
-
-        Matrix.rotateM(modelviewsphere, 0, angle, x, y, z);
-    }
-
-    public void scale(float x, float y, float z){
-
-        Matrix.scaleM(modelviewsphere, 0, x, y, z);
-    }
-
-
     /**
      * Send vertexes to GPU's buffer
      */
@@ -218,12 +184,11 @@ public class Sphere {
 
     /**
      * Global function to send buffers to GPU
-     * @param buffers
      * @param sb
      * @param s_array
      * @param glelementbuffer
      */
-    private void send_buffer_to_GPU(int[] buffers, ShortBuffer sb, short[] s_array, int glelementbuffer){
+    private void send_buffer_to_GPU(ShortBuffer sb, short[] s_array, int glelementbuffer){
 
         ByteBuffer bytebuf;
 
@@ -241,6 +206,38 @@ public class Sphere {
                 GLES20.GL_STATIC_DRAW
         );
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER,0);
+    }
+
+    public void initGraphics(){
+
+        int[] buffers = new int[2]; // Besoin d’un buffer sur la carte graphique
+        GLES20.glGenBuffers(2, buffers, 0); // Allocations des buffers
+
+        glposbuffer_vertex =buffers[0];
+        send_vertexes_to_GPU();
+
+        glelementbuffer_sphere =buffers[1];
+        send_buffer_to_GPU(spherebufferS, triangles,  glelementbuffer_sphere);
+    }
+
+    public void setModelView(final float[] modelviewmatrix){
+
+        System.arraycopy(modelviewmatrix, 0, modelviewsphere, 0, modelviewmatrix.length);
+    }
+
+    public void translate(float x, float y, float z){
+
+        Matrix.translateM(modelviewsphere,0, x, y, z);
+    }
+
+    public void rotate(float angle, float x, float y, float z){
+
+        Matrix.rotateM(modelviewsphere, 0, angle, x, y, z);
+    }
+
+    public void scale(float x, float y, float z){
+
+        Matrix.scaleM(modelviewsphere, 0, x, y, z);
     }
 
     public void draw(final NoLightShaders shaders){
