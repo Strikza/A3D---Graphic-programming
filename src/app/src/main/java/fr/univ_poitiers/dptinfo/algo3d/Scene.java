@@ -45,11 +45,15 @@ public class Scene
     /**
      * OBJ loader
      */
-    LoaderOBJ ldOBJ;
+    LoaderOBJ drk_sword;
+    LoaderOBJ drk_sword_lux;
+    LoaderOBJ cow;
+    LoaderOBJ toy_chest;
 
     /**
      * Square object
      */
+    Square support;
     Square square;
 
 
@@ -77,7 +81,11 @@ public class Scene
         ball = new Ball(1.2F, 0.F, -6.F);
         ball2 = new Ball(1.F, -1.8F, -1.8F);
         ball3 = new Ball(0.5F, 1.8F, -1.8F);
-        ldOBJ = new LoaderOBJ(context, "cow.obj");
+        drk_sword = new LoaderOBJ(context, "drk_sword.obj");
+        drk_sword_lux = new LoaderOBJ(context, "drk_sword_lux.obj");
+        cow = new LoaderOBJ(context, "cow.obj");
+        toy_chest = new LoaderOBJ(context, "toy_chest.obj");
+        support = new Square();
         square = new Square();
     }
 
@@ -92,7 +100,11 @@ public class Scene
         ball.initGraphics();
         ball2.initGraphics();
         ball3.initGraphics();
-        ldOBJ.initGraphics();
+        drk_sword.initGraphics();
+        drk_sword_lux.initGraphics();
+        cow.initGraphics();
+        toy_chest.initGraphics();
+        support.initGraphics();
         square.initGraphics();
 
         MainActivity.log("Initializing graphics");
@@ -138,7 +150,11 @@ public class Scene
         ball.setModelView(modelviewmatrix);
         ball2.setModelView(modelviewmatrix);
         ball3.setModelView(modelviewmatrix);
-        ldOBJ.setModelView(modelviewmatrix);
+        drk_sword.setModelView(modelviewmatrix);
+        drk_sword_lux.setModelView(modelviewmatrix);
+        cow.setModelView(modelviewmatrix);
+        toy_chest.setModelView(modelviewmatrix);
+        support.setModelView(modelviewmatrix);
         square.setModelView(modelviewmatrix);
 
 
@@ -162,6 +178,7 @@ public class Scene
         shaders.setColor(MyGLRenderer.gray);
         room.drawWall(shaders);
 
+
         // Balls
         shaders.setColor(MyGLRenderer.yellow);
         ball.draw(shaders);
@@ -170,13 +187,39 @@ public class Scene
         shaders.setColor(MyGLRenderer.orange);
         ball3.draw(shaders);
 
+
         //OBJ
         shaders.setColor(MyGLRenderer.lightgray);
-        ldOBJ.translate(0.F,1.F, 1.F);
-        ldOBJ.scale(0.25F,0.25F, 0.25F);
-        ldOBJ.draw(shaders);
+        drk_sword.translate(-2.9F,1.8F, 1.F);
+        drk_sword.rotate(180.0F, 0.0F, 0.0F, 1.0F);
+        drk_sword.rotate(90.0F, 0.0F, 1.0F, 0.0F);
+        drk_sword.draw(shaders);
+
+        shaders.setColor(MyGLRenderer.lightgray);
+        drk_sword_lux.translate(-2.9F,1.8F, 2.F);
+        drk_sword_lux.rotate(180.0F, 0.0F, 0.0F, 1.0F);
+        drk_sword_lux.rotate(90.0F, 0.0F, 1.0F, 0.0F);
+        drk_sword_lux.draw(shaders);
+
+        shaders.setColor(MyGLRenderer.lightgray);
+        cow.translate(1.8F, 0.91F, 1.8F);
+        cow.rotate(135.F, 0.F, 1.F, 0.F);
+        cow.scale(0.25F, 0.25f, 0.25f);
+        cow.draw(shaders);
+
+        shaders.setColor(MyGLRenderer.lightgray);
+        toy_chest.translate(-2.65F,0.5F, 1.5F);
+        toy_chest.rotate(90.0F, 0.0F, 1.0F, 0.0F);
+        toy_chest.draw(shaders);
+
 
         //Square
+        shaders.setColor(MyGLRenderer.lightgray);
+        support.translate(-2.9F, 0.0F, 1.25F);
+        support.rotate(-90.0F, 0.0F, 1.0F, 0.0F);
+        support.scale(0.5F, 0.5F, 0.5F);
+        support.draw(shaders);
+
         shaders.setColor(MyGLRenderer.blue);
         square.translate(-2.9F, 0.0F, -3.1F);
         square.scale(0.8F, 0.8F, 0.8F);
