@@ -1,5 +1,9 @@
 package fr.univ_poitiers.dptinfo.algo3d;
 
+/**
+ * Class to represent a ball
+ * @author Samuel Goubeau
+ */
 public class Ball {
 
     static public int SLICE = 30;
@@ -18,7 +22,7 @@ public class Ball {
         s = new Sphere(SLICE, QUARTER);
     }
 
-    public void initGraphic(){
+    public void initGraphics(){
 
         s.initGraphics();
     }

@@ -8,7 +8,10 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
-
+/**
+ * Class to represent a room with a door
+ * @author Samuel Goubeau
+ */
 public class Room {
 
     private float[] vertexpos;
@@ -29,7 +32,7 @@ public class Room {
     private float[] modelviewroom;
 
     /**
-     * Declaration of the 6 buffers needed
+     * Declaration of the 3 buffers needed
      */
     protected ShortBuffer floorbufferS;
 
@@ -252,13 +255,17 @@ public class Room {
         fb.position(0);
 
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, glposbuffer_vertex);
-        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, vertexpos.length * Float.BYTES,
-                fb, GLES20.GL_STATIC_DRAW);
+        GLES20.glBufferData(
+                GLES20.GL_ARRAY_BUFFER,
+                vertexpos.length * Float.BYTES,
+                fb,
+                GLES20.GL_STATIC_DRAW
+        );
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER,0);
     }
 
     /**
-     * Global function to send buffers to the GPU
+     * Global function to send buffers to GPU
      * @param buffers
      * @param sb
      * @param s_array

@@ -1,9 +1,9 @@
 package fr.univ_poitiers.dptinfo.algo3d;
 
 
+import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
-import android.util.Log;
 
 /**
  * Class to represent the scene. It includes all the objects to display, in this case a room
@@ -12,24 +12,8 @@ import android.util.Log;
  */
 public class Scene
 {
-    /**
-     * A constant for the size of the wall
-     */
-    static final float wallsize=3.F;
-    /**
-     * 4 quads to represent the walls of the room
-     */
-    Quad wall1,wall2,wall3,wall4;
 
-    /**
-     * A quad to represent a floor
-     */
-    Quad floor;
-
-    /**
-     * A quad to represent the ceiling of the room
-     */
-    Quad ceiling;
+    Context context;
 
     /**
      * An angle used to animate the viewer
@@ -53,11 +37,16 @@ public class Scene
     Ball ball2;
     Ball ball3;
 
+    LoaderOBJ ldOBJ;
+
 
     /**
      * Constructor : build each wall, the floor and the ceiling as quads
      */
-    public Scene() {
+    public Scene(Context c) {
+
+        context = c;
+
         // Init observer's view angles
         angley = 0.F;
         anglex = 0.F;
@@ -66,41 +55,12 @@ public class Scene
         posx = 0.F;
         posz = 0.F;
 
-
-        Vec3f P0_b = new Vec3f(-3.f, 0.f, 3.f);
-        Vec3f P1_b = new Vec3f(3.f, 0.f, 3.f);
-        Vec3f P2_b = new Vec3f(3.f, 0.f, -3.f);
-        Vec3f P3_b = new Vec3f(-3.f, 0.f, -3.f);
-
-        Vec3f P0_t = new Vec3f(-3.f, 2.5f, 3.f);
-        Vec3f P1_t = new Vec3f(3.f, 2.5f, 3.f);
-        Vec3f P2_t = new Vec3f(3.f, 2.5f, -3.f);
-        Vec3f P3_t = new Vec3f(-3.f, 2.5f, -3.f);
-
-
-        // Create the front wall
-        this.wall1 = new Quad(P3_b, P2_b, P2_t, P3_t);
-
-        // Create the right wall
-        this.wall2 = new Quad(P2_b, P1_b, P1_t, P2_t);
-
-        // Create the left wall
-        this.wall3 = new Quad(P1_b, P0_b, P0_t, P1_t);
-
-        // create the back wall
-        this.wall4 = new Quad(P0_b, P3_b, P3_t, P0_t);
-
-        // Create the floor of the room
-        this.floor = new Quad(P0_b, P1_b, P2_b, P3_b);
-
-        // Create the ceiling of the room
-        this.ceiling = new Quad(P3_t, P2_t, P1_t, P0_t);
-
         // Construct objects
         room = new Room();
         ball = new Ball(1.2F, 0.F, -6.F);
         ball2 = new Ball(1.F, -1.8F, -1.8F);
         ball3 = new Ball(0.5F, 1.8F, -1.8F);
+        ldOBJ = new LoaderOBJ(context, "geometrical_face.obj");
     }
 
 
@@ -111,9 +71,10 @@ public class Scene
     public void initGraphics(MyGLRenderer renderer)
     {
         room.initGraphics();
-        ball.initGraphic();
-        ball2.initGraphic();
-        ball3.initGraphic();
+        ball.initGraphics();
+        ball2.initGraphics();
+        ball3.initGraphics();
+        ldOBJ.initGraphics();
 
         MainActivity.log("Initializing graphics");
         // Set the background frame color
@@ -158,6 +119,7 @@ public class Scene
         ball.setModelView(modelviewmatrix);
         ball2.setModelView(modelviewmatrix);
         ball3.setModelView(modelviewmatrix);
+        ldOBJ.setModelView(modelviewmatrix);
 
 
         // 1st room
@@ -170,8 +132,8 @@ public class Scene
 
 
         // 2nd room
+        room.translate(0.F,0.F,-6.F);
         room.rotate(180.F,0.0F,1.0F,0.0F);
-        room.translate(0.F,0.F,6.F);
 
         shaders.setColor(MyGLRenderer.white);
         room.drawFloor(shaders);
@@ -187,6 +149,13 @@ public class Scene
         ball2.draw(shaders);
         shaders.setColor(MyGLRenderer.orange);
         ball3.draw(shaders);
+
+
+        //OBJ
+        shaders.setColor(MyGLRenderer.lightgray);
+        ldOBJ.translate(0.F,1.F, 1.F);
+        ldOBJ.scale(0.25F,0.25F, 0.25F);
+        ldOBJ.draw(shaders);
 
         MainActivity.log("Rendering terminated.");
     }

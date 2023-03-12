@@ -3,11 +3,8 @@ package fr.univ_poitiers.dptinfo.algo3d;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.service.controls.actions.ModeAction;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
-import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.Button;
@@ -53,7 +50,7 @@ public class MainActivity extends Activity
 
         // Create a GLSurfaceView instance and set it
         // as the ContentView for this Activity
-        this.scene =new Scene();
+        this.scene = new Scene(this);
         this.glview = new MyGLSurfaceView(this,this.scene);
         setContentView(this.glview);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);

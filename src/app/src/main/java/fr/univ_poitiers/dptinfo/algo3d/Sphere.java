@@ -8,6 +8,10 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
+/**
+ * Class to represent a sphere
+ * @author Samuel Goubeau
+ */
 public class Sphere {
 
     private int nb_slice;
@@ -92,7 +96,7 @@ public class Sphere {
         vertexpos[vertexIndex +2] = z_temp;
 
         nbTriangles = (nb_quarter * 2) + (((nb_slice - 2) * nb_quarter) * 2);
-        triangles = new short[nbTriangles *3];
+        triangles = new short[nbTriangles * 3];
 
 
         int i_triangle = 0;
@@ -158,52 +162,6 @@ public class Sphere {
         }
     }
 
-    /**
-     * Send vertexes to GPU's buffer
-     */
-    private void send_vertexes_to_GPU(){
-        ByteBuffer bytebuf = ByteBuffer.allocateDirect(vertexpos.length * Float.BYTES);
-        bytebuf.order(ByteOrder.nativeOrder());
-        FloatBuffer fb = bytebuf.asFloatBuffer();
-        fb.put(vertexpos);
-        fb.position(0);
-
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, glposbuffer_vertex);
-        GLES20.glBufferData(
-                GLES20.GL_ARRAY_BUFFER,
-                vertexpos.length * Float.BYTES,
-                fb,
-                GLES20.GL_STATIC_DRAW
-        );
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER,0);
-    }
-
-    /**
-     * Global function to send buffers to the GPU
-     * @param buffers
-     * @param sb
-     * @param s_array
-     * @param glelementbuffer
-     */
-    private void send_buffer_to_GPU(int[] buffers, ShortBuffer sb, short[] s_array, int glelementbuffer){
-
-        ByteBuffer bytebuf;
-
-        bytebuf = ByteBuffer.allocateDirect(s_array.length * Short.BYTES);
-        bytebuf.order(ByteOrder.nativeOrder());
-        sb = bytebuf.asShortBuffer();
-        sb.put(s_array);
-        sb.position(0);
-
-        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, glelementbuffer);
-        GLES20.glBufferData(
-                GLES20.GL_ELEMENT_ARRAY_BUFFER,
-                s_array.length * Short.BYTES,
-                sb,
-                GLES20.GL_STATIC_DRAW
-        );
-        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER,0);
-    }
 
     public void initGraphics(){
 
@@ -235,6 +193,54 @@ public class Sphere {
     public void scale(float x, float y, float z){
 
         Matrix.scaleM(modelviewsphere, 0, x, y, z);
+    }
+
+
+    /**
+     * Send vertexes to GPU's buffer
+     */
+    private void send_vertexes_to_GPU(){
+        ByteBuffer bytebuf = ByteBuffer.allocateDirect(vertexpos.length * Float.BYTES);
+        bytebuf.order(ByteOrder.nativeOrder());
+        FloatBuffer fb = bytebuf.asFloatBuffer();
+        fb.put(vertexpos);
+        fb.position(0);
+
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, glposbuffer_vertex);
+        GLES20.glBufferData(
+                GLES20.GL_ARRAY_BUFFER,
+                vertexpos.length * Float.BYTES,
+                fb,
+                GLES20.GL_STATIC_DRAW
+        );
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER,0);
+    }
+
+    /**
+     * Global function to send buffers to GPU
+     * @param buffers
+     * @param sb
+     * @param s_array
+     * @param glelementbuffer
+     */
+    private void send_buffer_to_GPU(int[] buffers, ShortBuffer sb, short[] s_array, int glelementbuffer){
+
+        ByteBuffer bytebuf;
+
+        bytebuf = ByteBuffer.allocateDirect(s_array.length * Short.BYTES);
+        bytebuf.order(ByteOrder.nativeOrder());
+        sb = bytebuf.asShortBuffer();
+        sb.put(s_array);
+        sb.position(0);
+
+        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, glelementbuffer);
+        GLES20.glBufferData(
+                GLES20.GL_ELEMENT_ARRAY_BUFFER,
+                s_array.length * Short.BYTES,
+                sb,
+                GLES20.GL_STATIC_DRAW
+        );
+        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER,0);
     }
 
     public void draw(final NoLightShaders shaders){
