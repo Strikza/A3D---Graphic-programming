@@ -5,6 +5,11 @@ import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
+import fr.univ_poitiers.dptinfo.algo3d.object.Ball;
+import fr.univ_poitiers.dptinfo.algo3d.object.LoaderOBJ;
+import fr.univ_poitiers.dptinfo.algo3d.object.Room;
+import fr.univ_poitiers.dptinfo.algo3d.object.Square;
+
 /**
  * Class to represent the scene. It includes all the objects to display, in this case a room
  * @author Philippe Meseure
@@ -37,7 +42,15 @@ public class Scene
     Ball ball2;
     Ball ball3;
 
+    /**
+     * OBJ loader
+     */
     LoaderOBJ ldOBJ;
+
+    /**
+     * Square object
+     */
+    Square square;
 
 
     /**
@@ -55,6 +68,7 @@ public class Scene
         posx = 0.F;
         posz = 0.F;
 
+        // Set quarter an slice for all balls
         Ball.setQUARTER(50);
         Ball.setSLICE(50);
 
@@ -64,6 +78,7 @@ public class Scene
         ball2 = new Ball(1.F, -1.8F, -1.8F);
         ball3 = new Ball(0.5F, 1.8F, -1.8F);
         ldOBJ = new LoaderOBJ(context, "cow.obj");
+        square = new Square();
     }
 
 
@@ -78,6 +93,7 @@ public class Scene
         ball2.initGraphics();
         ball3.initGraphics();
         ldOBJ.initGraphics();
+        square.initGraphics();
 
         MainActivity.log("Initializing graphics");
         // Set the background frame color
@@ -123,6 +139,7 @@ public class Scene
         ball2.setModelView(modelviewmatrix);
         ball3.setModelView(modelviewmatrix);
         ldOBJ.setModelView(modelviewmatrix);
+        square.setModelView(modelviewmatrix);
 
 
         // 1st room
@@ -153,12 +170,32 @@ public class Scene
         shaders.setColor(MyGLRenderer.orange);
         ball3.draw(shaders);
 
-
         //OBJ
         shaders.setColor(MyGLRenderer.lightgray);
         ldOBJ.translate(0.F,1.F, 1.F);
         ldOBJ.scale(0.25F,0.25F, 0.25F);
         ldOBJ.draw(shaders);
+
+        //Square
+        shaders.setColor(MyGLRenderer.blue);
+        square.translate(-2.9F, 0.0F, -3.1F);
+        square.scale(0.8F, 0.8F, 0.8F);
+        square.draw(shaders);
+
+        shaders.setColor(MyGLRenderer.yellow);
+        square.translate(-0.0F, 1.0F, 0.0F);
+        square.scale(0.8F, 0.8F, 0.8F);
+        square.draw(shaders);
+
+        shaders.setColor(MyGLRenderer.green);
+        square.translate(-0.0F, 1.0F, 0.0F);
+        square.scale(0.8F, 0.8F, 0.8F);
+        square.draw(shaders);
+
+        shaders.setColor(MyGLRenderer.red);
+        square.translate(-0.0F, 1.0F, 0.0F);
+        square.scale(0.8F, 0.8F, 0.8F);
+        square.draw(shaders);
 
         MainActivity.log("Rendering terminated.");
     }
