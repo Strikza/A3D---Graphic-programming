@@ -5,10 +5,11 @@ import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
-import fr.univ_poitiers.dptinfo.algo3d.object.Ball;
-import fr.univ_poitiers.dptinfo.algo3d.object.LoaderOBJ;
-import fr.univ_poitiers.dptinfo.algo3d.object.Room;
-import fr.univ_poitiers.dptinfo.algo3d.object.Square;
+import fr.univ_poitiers.dptinfo.algo3d.renderObject.Ball;
+import fr.univ_poitiers.dptinfo.algo3d.renderObject.Icosphere;
+import fr.univ_poitiers.dptinfo.algo3d.renderObject.LoaderOBJ;
+import fr.univ_poitiers.dptinfo.algo3d.renderObject.Room;
+import fr.univ_poitiers.dptinfo.algo3d.renderObject.Square;
 
 /**
  * Class to represent the scene. It includes all the objects to display, in this case a room
@@ -38,9 +39,8 @@ public class Scene
     /**
      * Sphere object
      */
-    Ball ball;
+    Ball ball1;
     Ball ball2;
-    Ball ball3;
 
     /**
      * OBJ loader
@@ -49,12 +49,19 @@ public class Scene
     LoaderOBJ drk_sword_lux;
     LoaderOBJ cow;
     LoaderOBJ toy_chest;
+    LoaderOBJ turtle;
+    LoaderOBJ pig;
 
     /**
      * Square object
      */
     Square support;
     Square square;
+
+    /**
+     * Icosphere object
+     */
+    Icosphere icosphere;
 
 
     /**
@@ -73,20 +80,22 @@ public class Scene
         posz = 0.F;
 
         // Set quarter an slice for all balls
-        Ball.setQUARTER(50);
-        Ball.setSLICE(50);
+        Ball.setQUARTER(20);
+        Ball.setSLICE(20);
 
         // Construct objects
         room = new Room();
-        ball = new Ball(1.2F, 0.F, -6.F);
-        ball2 = new Ball(1.F, -1.8F, -1.8F);
-        ball3 = new Ball(0.5F, 1.8F, -1.8F);
+        ball1 = new Ball(1.F, -1.8F, -1.8F);
+        ball2 = new Ball(0.5F, 1.8F, -1.8F);
         drk_sword = new LoaderOBJ(context, "drk_sword.obj");
         drk_sword_lux = new LoaderOBJ(context, "drk_sword_lux.obj");
         cow = new LoaderOBJ(context, "cow.obj");
         toy_chest = new LoaderOBJ(context, "toy_chest.obj");
+        turtle = new LoaderOBJ(context, "turtle.obj");
+        pig = new LoaderOBJ(context, "pig.obj");
         support = new Square();
         square = new Square();
+        icosphere = new Icosphere(3);
     }
 
 
@@ -97,15 +106,17 @@ public class Scene
     public void initGraphics(MyGLRenderer renderer)
     {
         room.initGraphics();
-        ball.initGraphics();
+        ball1.initGraphics();
         ball2.initGraphics();
-        ball3.initGraphics();
         drk_sword.initGraphics();
         drk_sword_lux.initGraphics();
         cow.initGraphics();
         toy_chest.initGraphics();
+        turtle.initGraphics();
+        pig.initGraphics();
         support.initGraphics();
         square.initGraphics();
+        icosphere.initGraphics();
 
         MainActivity.log("Initializing graphics");
         // Set the background frame color
@@ -147,15 +158,17 @@ public class Scene
 
         // Set ModelView for objects
         room.setModelView(modelviewmatrix);
-        ball.setModelView(modelviewmatrix);
+        ball1.setModelView(modelviewmatrix);
         ball2.setModelView(modelviewmatrix);
-        ball3.setModelView(modelviewmatrix);
         drk_sword.setModelView(modelviewmatrix);
         drk_sword_lux.setModelView(modelviewmatrix);
         cow.setModelView(modelviewmatrix);
         toy_chest.setModelView(modelviewmatrix);
+        turtle.setModelView(modelviewmatrix);
+        pig.setModelView(modelviewmatrix);
         support.setModelView(modelviewmatrix);
         square.setModelView(modelviewmatrix);
+        icosphere.setModelView(modelviewmatrix);
 
 
         // 1st room
@@ -180,12 +193,10 @@ public class Scene
 
 
         // Balls
-        shaders.setColor(MyGLRenderer.yellow);
-        ball.draw(shaders);
         shaders.setColor(MyGLRenderer.cyan);
-        ball2.draw(shaders);
+        ball1.draw(shaders);
         shaders.setColor(MyGLRenderer.orange);
-        ball3.draw(shaders);
+        ball2.draw(shaders);
 
 
         //OBJ
@@ -212,6 +223,17 @@ public class Scene
         toy_chest.rotate(90.0F, 0.0F, 1.0F, 0.0F);
         toy_chest.draw(shaders);
 
+        shaders.setColor(MyGLRenderer.lightgray);
+        turtle.translate(-2.65F, 1.96F, -3.35F);
+        turtle.rotate(135.0F, 0.0F, 1.0F, 0.0F);
+        turtle.draw(shaders);
+
+        shaders.setColor(MyGLRenderer.lightgray);
+        pig.translate(1.925F, 0.F, -4.065F);
+        pig.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
+        pig.scale(4.F, 4.F, 4.F);
+        pig.draw(shaders);
+
 
         //Square
         shaders.setColor(MyGLRenderer.lightgray);
@@ -235,10 +257,12 @@ public class Scene
         square.scale(0.8F, 0.8F, 0.8F);
         square.draw(shaders);
 
-        shaders.setColor(MyGLRenderer.red);
-        square.translate(-0.0F, 1.0F, 0.0F);
-        square.scale(0.8F, 0.8F, 0.8F);
-        square.draw(shaders);
+
+        //Icosphere
+        shaders.setColor(MyGLRenderer.yellow);
+        icosphere.translate(0.F, 1.25F, -7.F);
+        icosphere.scale(1.25F, 1.25F, 1.25F);
+        icosphere.draw(shaders);
 
         MainActivity.log("Rendering terminated.");
     }
