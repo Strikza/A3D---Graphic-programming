@@ -25,6 +25,9 @@ public class Scene
      */
     Context context;
 
+    /**
+     * to activate detection of hit boxes
+     */
     boolean isHitboxesAreActivated;
 
     /**

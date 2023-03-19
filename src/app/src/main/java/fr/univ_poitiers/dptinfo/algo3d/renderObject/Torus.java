@@ -74,6 +74,5 @@ public class Torus extends Mesh {
                 triangleIndex += 6;
             }
         }
-
     }
 }
