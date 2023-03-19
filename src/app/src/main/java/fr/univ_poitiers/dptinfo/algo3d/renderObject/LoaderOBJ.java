@@ -22,27 +22,17 @@ import fr.univ_poitiers.dptinfo.algo3d.NoLightShaders;
  * Class to load OBJ file
  * @author Samuel Goubeau
  */
-public class LoaderOBJ {
+public class LoaderOBJ extends Mesh{
 
     static final String LOG_TAG = "LoaderOBJ";
 
-    private float[] vertexpos;
     private float[] vertextexture;
     private float[] vertexnormal;
-    private int[] triangles;
     private int[] textures;
     private int[] normals;
 
-    private float[] modelviewOBJ;
-
-    protected IntBuffer objbufferI;
-    private int glelementbuffer_obj;
-    private int glposbuffer_vertex;
-
-
     public LoaderOBJ(Context context, String fileName){
-
-        modelviewOBJ=new float[16];
+        super(false);
 
         try {
             InputStream ipst = context.getResources().getAssets().open(fileName);
@@ -281,104 +271,5 @@ public class LoaderOBJ {
         } catch (IOException e) {
             Log.d(LOG_TAG, "File not found");
         }
-    }
-
-    /**
-     * Send vertices to GPU's buffer
-     */
-    private void send_vertexes_to_GPU(){
-
-        ByteBuffer bytebuf = ByteBuffer.allocateDirect(vertexpos.length * Float.BYTES);
-        bytebuf.order(ByteOrder.nativeOrder());
-        FloatBuffer fb = bytebuf.asFloatBuffer();
-        fb.put(vertexpos);
-        fb.position(0);
-
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, glposbuffer_vertex);
-        GLES20.glBufferData(
-                GLES20.GL_ARRAY_BUFFER,
-                vertexpos.length * Float.BYTES,
-                fb,
-                GLES20.GL_STATIC_DRAW
-        );
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER,0);
-    }
-
-    /**
-     * Global function to send buffers to GPU
-     * @param ib
-     * @param i_array
-     * @param glelementbuffer
-     */
-    private void send_buffer_to_GPU(IntBuffer ib, int[] i_array, int glelementbuffer){
-
-        ByteBuffer bytebuf;
-
-        bytebuf = ByteBuffer.allocateDirect(i_array.length * Integer.BYTES);
-        bytebuf.order(ByteOrder.nativeOrder());
-        ib = bytebuf.asIntBuffer();
-        ib.put(i_array);
-        ib.position(0);
-
-        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, glelementbuffer);
-        GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER, i_array.length * Integer.BYTES,
-                ib, GLES20.GL_STATIC_DRAW);
-        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER,0);
-    }
-
-    public void initGraphics(){
-
-        int[] buffers = new int[2]; // Besoin d’un buffer sur la carte graphique
-        GLES20.glGenBuffers(2, buffers, 0); // Allocations des buffers
-
-        glposbuffer_vertex =buffers[0];
-        send_vertexes_to_GPU();
-
-        glelementbuffer_obj =buffers[1];
-        send_buffer_to_GPU(objbufferI, triangles,  glelementbuffer_obj);
-    }
-
-    public void setModelView(final float[] modelviewmatrix){
-
-        System.arraycopy(modelviewmatrix, 0, modelviewOBJ, 0, modelviewmatrix.length);
-    }
-
-    public void translate(float x, float y, float z){
-
-        Matrix.translateM(modelviewOBJ,0, x, y, z);
-    }
-
-    public void rotate(float angle, float x, float y, float z){
-
-        Matrix.rotateM(modelviewOBJ, 0, angle, x, y, z);
-    }
-
-    public void scale(float x, float y, float z){
-
-        Matrix.scaleM(modelviewOBJ, 0, x, y, z);
-    }
-
-    public void draw(final NoLightShaders shaders){
-
-        shaders.setModelViewMatrix(modelviewOBJ);
-
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, glposbuffer_vertex);
-        shaders.setPositionsPointer(3,GLES20.GL_FLOAT);
-        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, glelementbuffer_obj);
-
-        GLES20.glPolygonOffset(2.F,4.F);
-        GLES20.glEnable(GLES20.GL_POLYGON_OFFSET_FILL);
-
-        GLES20.glDrawElements(GLES20.GL_TRIANGLES, triangles.length, GLES20.GL_UNSIGNED_INT, 0);
-        GLES20.glDisable(GLES20.GL_POLYGON_OFFSET_FILL);
-        shaders.setColor(MyGLRenderer.black);
-
-        for(int i=0; i<triangles.length; i+=3){
-
-            GLES20.glDrawElements(GLES20.GL_LINE_LOOP, 3, GLES20.GL_UNSIGNED_INT, i*Integer.BYTES);
-        }
-
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER,0);
-        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER,0);
     }
 }

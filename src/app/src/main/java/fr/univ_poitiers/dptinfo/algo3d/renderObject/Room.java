@@ -23,33 +23,22 @@ public class Room {
     private short[] triangles_floor;
     private short[] triangles_ceiling;
     private short[] triangles_wall;
-
-    private int nbvertices_floor;
-    private int nbvertices_ceiling;
-    private int nbvertices_wall;
+    private short[] edge_wall;
 
     private int glposbuffer_vertex;
     private int glelementbuffer_floor;
     private int glelementbuffer_ceiling;
     private int glelementbuffer_wall;
+    private int glelementbuffer_line;
 
     private float[] modelviewroom;
 
     /**
-     * Declaration of the 3 buffers needed
+     * Declaration of the 4 buffers needed
      */
     protected ShortBuffer floorbufferS;
-
     protected ShortBuffer ceilingbufferS;
-
     protected ShortBuffer wallbufferS;
-
-    /**
-     * Edge display
-     */
-    private short[] edge_wall;
-    private int nbindexlines;
-    private int glelementbuffer_line;
     protected ShortBuffer linebufferS;
 
 
@@ -240,11 +229,6 @@ public class Room {
                 38, 39,
                 39, 36
         };
-
-        nbvertices_floor = triangles_floor.length;
-        nbvertices_ceiling = triangles_ceiling.length;
-        nbvertices_wall = triangles_wall.length;
-        nbindexlines = edge_wall.length;
     }
 
 
@@ -352,7 +336,7 @@ public class Room {
         shaders.setPositionsPointer(3,GLES20.GL_FLOAT);
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, glelementbuffer_floor);
 
-        GLES20.glDrawElements(GLES20.GL_TRIANGLES, nbvertices_floor, GLES20.GL_UNSIGNED_SHORT, 0);
+        GLES20.glDrawElements(GLES20.GL_TRIANGLES, triangles_floor.length, GLES20.GL_UNSIGNED_SHORT, 0);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER,0);
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER,0);
     }
@@ -365,7 +349,7 @@ public class Room {
         shaders.setPositionsPointer(3,GLES20.GL_FLOAT);
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, glelementbuffer_ceiling);
 
-        GLES20.glDrawElements(GLES20.GL_TRIANGLES, nbvertices_ceiling, GLES20.GL_UNSIGNED_SHORT, 0);
+        GLES20.glDrawElements(GLES20.GL_TRIANGLES, triangles_ceiling.length, GLES20.GL_UNSIGNED_SHORT, 0);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER,0);
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER,0);
     }
@@ -381,12 +365,12 @@ public class Room {
         GLES20.glPolygonOffset(2.F,4.F);
         GLES20.glEnable(GLES20.GL_POLYGON_OFFSET_FILL);
 
-        GLES20.glDrawElements(GLES20.GL_TRIANGLES, nbvertices_wall, GLES20.GL_UNSIGNED_SHORT, 0);
+        GLES20.glDrawElements(GLES20.GL_TRIANGLES, triangles_wall.length, GLES20.GL_UNSIGNED_SHORT, 0);
         GLES20.glDisable(GLES20.GL_POLYGON_OFFSET_FILL);
         shaders.setColor(MyGLRenderer.black);
 
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, glelementbuffer_line);
-        GLES20.glDrawElements(GLES20.GL_LINES, nbindexlines,GLES20.GL_UNSIGNED_SHORT, 0);
+        GLES20.glDrawElements(GLES20.GL_LINES, edge_wall.length,GLES20.GL_UNSIGNED_SHORT, 0);
 
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER,0);
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER,0);

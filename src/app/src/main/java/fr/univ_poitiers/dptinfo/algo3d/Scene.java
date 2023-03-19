@@ -102,7 +102,7 @@ public class Scene
         support = new Square();
         square = new Square();
         icosphere = new Icosphere(3);
-        torus = new Torus(49, 49,1F, 0.5F);
+        torus = new Torus(49, 49,2.F, 1.F);
     }
 
 
@@ -277,7 +277,7 @@ public class Scene
         //Torus
         shaders.setColor(MyGLRenderer.lightgray);
         torus.translate(0.F, 0.5F, -3.F);
-        torus.scale(0.5F,0.5F, 0.5F);
+        torus.scale(0.25F,0.25F, 0.25F);
         torus.draw(shaders);
 
 
