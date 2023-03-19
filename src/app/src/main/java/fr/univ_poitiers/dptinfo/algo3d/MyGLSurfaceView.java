@@ -73,19 +73,23 @@ public class MyGLSurfaceView extends GLSurfaceView
                     scene.posx += Math.cos(Math.toRadians(scene.angley)) * deltax/200 - Math.sin(Math.toRadians(scene.angley)) * deltay/200;
                     scene.posz += Math.sin(Math.toRadians(scene.angley)) * deltax/200 + Math.cos(Math.toRadians(scene.angley)) * deltay/200;
 
-/*                    // Hit box sur x
-                    scene.posx = Math.max(scene.posx, -2.8F);
-                    scene.posx = Math.min(scene.posx, 2.8F);
+                    if(scene.isHitboxesAreActivated){
 
-                    // Hit box sur z
-                    scene.posz = Math.max(scene.posz, -2.8F);
-                    scene.posz = Math.min(scene.posz, 8.8F);
+                        // Hit box on x
+                        scene.posx = Math.max(scene.posx, -2.8F);
+                        scene.posx = Math.min(scene.posx, 2.8F);
 
-                    // Hit box de la porte
-                    if(scene.posz >= 2.8F && scene.posz <= 3.2F && Math.abs(scene.posx) > 0.8F){
-                        scene.posz = prev_posz;
-                        scene.posx = prev_posx;
-                    }*/
+                        // Hit box on z
+                        scene.posz = Math.max(scene.posz, -2.8F);
+                        scene.posz = Math.min(scene.posz, 8.8F);
+
+                        // Hit box of the door
+                        if(scene.posz >= 2.8F && scene.posz <= 3.2F && Math.abs(scene.posx) > 0.8F){
+                            scene.posz = prev_posz;
+                            scene.posx = prev_posx;
+                        }
+                    }
+
                 }
             case MotionEvent.ACTION_DOWN:
                 if(e.getPointerCount() == 3){

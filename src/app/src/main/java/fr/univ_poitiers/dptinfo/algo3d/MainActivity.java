@@ -8,6 +8,9 @@ import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
+import android.widget.TextView;
 
 import fr.univ_poitiers.dptinfo.algo3d.R;
 
@@ -55,8 +58,8 @@ public class MainActivity extends Activity
         setContentView(this.glview);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
-        /**
-         * Creation of reset button
+        /*
+         * Creation of all widgets
          */
         DisplayMetrics screen = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(screen);
@@ -65,8 +68,31 @@ public class MainActivity extends Activity
         reset.setX(screen.widthPixels - 245);
         reset.setY(20);
         reset.setText(R.string.reset_text);
-        reset.setOnClickListener(view -> scene.reset_pos());
+        reset.setOnClickListener(view->scene.reset_pos());
         this.addContentView(reset, new AbsListView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        TextView label = new TextView(this);
+        label.setX(20);
+        label.setY(20);
+        label.setTextSize(20);
+        label.setText("Activate hitbox");
+        label.setTextColor(0xffffffff);
+        label.setBackgroundColor(0x8c8c8c8c);
+        this.addContentView(label, new AbsListView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        Switch hitboxes = new Switch(this);
+        hitboxes.setX(20);
+        hitboxes.setY(80);
+        hitboxes.setChecked(false);
+        hitboxes.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                scene.isHitboxesAreActivated = isChecked;
+            }
+        });
+        this.addContentView(hitboxes, new AbsListView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
     }
 
     /**

@@ -1,30 +1,28 @@
 package fr.univ_poitiers.dptinfo.algo3d.renderObject;
 
-import android.opengl.GLES20;
-import android.opengl.Matrix;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-
-import fr.univ_poitiers.dptinfo.algo3d.MyGLRenderer;
-import fr.univ_poitiers.dptinfo.algo3d.NoLightShaders;
-
+/**
+ * Class to represent a torus
+ * @author Samuel Goubeau
+ */
 public class Torus extends Mesh {
 
+    /**
+     * Constructor for a torus
+     * @param slice : number of slices (must be superior to 2)
+     * @param quarter : number of quarters (must be superior ro 2)
+     * @param R : major radius (distance from the centre of the torus to the centre of the tube)
+     * @param r : minor radius (radius of the tube)
+     */
     public Torus(int slice, int quarter, float R, float r){
         super(false);
 
-        // TODO : renvoyer une erreur si slice ou quarter sont inférieurs à 3
         slice = Math.max(slice, 3);
         quarter = Math.max(quarter, 3);
-
 
         float phi = 360/(float)quarter;
         float theta = 360/(float)slice;
 
-        /**
+        /*
          * Equations :
          *
          * x = (R + r * cos(phi)) * cos(theta)
@@ -57,6 +55,7 @@ public class Torus extends Mesh {
             }
         }
 
+        // Triangles indexes
         int nbTriangles = quarter * slice * 2;
         triangles = new int[nbTriangles * 3];
         int triangleIndex = 0;

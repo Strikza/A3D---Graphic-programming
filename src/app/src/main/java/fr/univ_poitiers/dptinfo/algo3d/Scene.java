@@ -20,7 +20,12 @@ import fr.univ_poitiers.dptinfo.algo3d.renderObject.Torus;
 public class Scene
 {
 
+    /**
+     * Context of the application
+     */
     Context context;
+
+    boolean isHitboxesAreActivated;
 
     /**
      * An angle used to animate the viewer
@@ -62,12 +67,16 @@ public class Scene
     /**
      * Icosphere object
      */
-    Icosphere icosphere;
+    Icosphere icosphere_div0;
+    Icosphere icosphere_div2;
+    Icosphere icosphere_div4;
 
     /**
      * Torus object
      */
-    Torus torus;
+    Torus torus_ring;
+    Torus torus_horn;
+    Torus torus_self_intersecting_spindle;
 
 
     /**
@@ -76,6 +85,8 @@ public class Scene
     public Scene(Context c) {
 
         context = c;
+
+        isHitboxesAreActivated = false;
 
         // Init observer's view angles
         angley = 0.F;
@@ -91,8 +102,8 @@ public class Scene
 
         // Construct objects
         room = new Room();
-        ball1 = new Ball(1.F, -1.8F, -1.8F);
-        ball2 = new Ball(0.5F, 1.8F, -1.8F);
+        ball1 = new Ball(1.F, 1.8F, -1.8F);
+        ball2 = new Ball(0.5F, 1.8F, 0.F);
         drk_sword = new LoaderOBJ(context, "drk_sword.obj");
         drk_sword_lux = new LoaderOBJ(context, "drk_sword_lux.obj");
         cow = new LoaderOBJ(context, "cow.obj");
@@ -101,8 +112,12 @@ public class Scene
         pig = new LoaderOBJ(context, "pig.obj");
         support = new Square();
         square = new Square();
-        icosphere = new Icosphere(3);
-        torus = new Torus(49, 49,2.F, 1.F);
+        icosphere_div0 = new Icosphere(0);
+        icosphere_div2 = new Icosphere(2);
+        icosphere_div4 = new Icosphere(4);
+        torus_ring = new Torus(49, 49,2.F, 1.F);
+        torus_horn = new Torus(49, 49,1.F, 1.F);
+        torus_self_intersecting_spindle = new Torus(49, 49,1.F, 2.F);
     }
 
 
@@ -123,8 +138,12 @@ public class Scene
         pig.initGraphics();
         support.initGraphics();
         square.initGraphics();
-        icosphere.initGraphics();
-        torus.initGraphics();
+        icosphere_div0.initGraphics();
+        icosphere_div2.initGraphics();
+        icosphere_div4.initGraphics();
+        torus_ring.initGraphics();
+        torus_horn.initGraphics();
+        torus_self_intersecting_spindle.initGraphics();
 
         MainActivity.log("Initializing graphics");
         // Set the background frame color
@@ -176,29 +195,33 @@ public class Scene
         pig.setModelView(modelviewmatrix);
         support.setModelView(modelviewmatrix);
         square.setModelView(modelviewmatrix);
-        icosphere.setModelView(modelviewmatrix);
-        torus.setModelView(modelviewmatrix);
+        icosphere_div0.setModelView(modelviewmatrix);
+        icosphere_div2.setModelView(modelviewmatrix);
+        icosphere_div4.setModelView(modelviewmatrix);
+        torus_ring.setModelView(modelviewmatrix);
+        torus_horn.setModelView(modelviewmatrix);
+        torus_self_intersecting_spindle.setModelView(modelviewmatrix);
 
 
         // 1st room
-        shaders.setColor(MyGLRenderer.white);
-        room.drawFloor(shaders);
-        shaders.setColor(MyGLRenderer.darkgray);
-        room.drawCeiling(shaders);
-        shaders.setColor(MyGLRenderer.magenta);
-        room.drawWall(shaders);
+        room.draw(
+                shaders,
+                MyGLRenderer.white,
+                MyGLRenderer.darkgray,
+                MyGLRenderer.magenta
+        );
 
 
         // 2nd room
         room.translate(0.F,0.F,-6.F);
         room.rotate(180.F,0.0F,1.0F,0.0F);
 
-        shaders.setColor(MyGLRenderer.white);
-        room.drawFloor(shaders);
-        shaders.setColor(MyGLRenderer.darkgray);
-        room.drawCeiling(shaders);
-        shaders.setColor(MyGLRenderer.gray);
-        room.drawWall(shaders);
+        room.draw(
+                shaders,
+                MyGLRenderer.white,
+                MyGLRenderer.darkgray,
+                MyGLRenderer.gray
+        );
 
 
         // Balls
@@ -210,15 +233,13 @@ public class Scene
 
         //OBJ
         shaders.setColor(MyGLRenderer.lightgray);
-        drk_sword.translate(-2.9F,1.8F, 1.F);
+        drk_sword.translate(-2.0F,1.8F, 2.9F);
         drk_sword.rotate(180.0F, 0.0F, 0.0F, 1.0F);
-        drk_sword.rotate(90.0F, 0.0F, 1.0F, 0.0F);
         drk_sword.draw(shaders);
 
         shaders.setColor(MyGLRenderer.lightgray);
-        drk_sword_lux.translate(-2.9F,1.8F, 2.F);
+        drk_sword_lux.translate(-1.0F,1.8F, 2.9F);
         drk_sword_lux.rotate(180.0F, 0.0F, 0.0F, 1.0F);
-        drk_sword_lux.rotate(90.0F, 0.0F, 1.0F, 0.0F);
         drk_sword_lux.draw(shaders);
 
         shaders.setColor(MyGLRenderer.lightgray);
@@ -228,8 +249,8 @@ public class Scene
         cow.draw(shaders);
 
         shaders.setColor(MyGLRenderer.lightgray);
-        toy_chest.translate(-2.65F,0.5F, 1.5F);
-        toy_chest.rotate(90.0F, 0.0F, 1.0F, 0.0F);
+        toy_chest.translate(-1.5F,0.5F, 2.65F);
+        toy_chest.rotate(180.0F, 0.0F, 1.0F, 0.0F);
         toy_chest.draw(shaders);
 
         shaders.setColor(MyGLRenderer.lightgray);
@@ -246,7 +267,7 @@ public class Scene
 
         //Square
         shaders.setColor(MyGLRenderer.lightgray);
-        support.translate(-2.9F, 0.0F, 1.25F);
+        support.translate(-1.75F, 0.0F, 2.4F);
         support.rotate(-90.0F, 0.0F, 1.0F, 0.0F);
         support.scale(0.5F, 0.5F, 0.5F);
         support.draw(shaders);
@@ -269,16 +290,36 @@ public class Scene
 
         //Icosphere
         shaders.setColor(MyGLRenderer.yellow);
-        icosphere.translate(0.F, 1.25F, -7.F);
-        icosphere.scale(1.25F, 1.25F, 1.25F);
-        icosphere.draw(shaders);
+        icosphere_div0.translate(-2.F, 1.25F, -7.F);
+        icosphere_div0.scale(0.75F, 0.75F, 0.75F);
+        icosphere_div0.draw(shaders);
+
+        shaders.setColor(MyGLRenderer.yellow);
+        icosphere_div2.translate(0.F, 1.25F, -7.F);
+        icosphere_div2.scale(0.75F, 0.75F, 0.75F);
+        icosphere_div2.draw(shaders);
+
+        shaders.setColor(MyGLRenderer.yellow);
+        icosphere_div4.translate(2.F, 1.25F, -7.F);
+        icosphere_div4.scale(0.75F, 0.75F, 0.75F);
+        icosphere_div4.draw(shaders);
 
 
         //Torus
-        shaders.setColor(MyGLRenderer.lightgray);
-        torus.translate(0.F, 0.5F, -3.F);
-        torus.scale(0.25F,0.25F, 0.25F);
-        torus.draw(shaders);
+        shaders.setColor(MyGLRenderer.red);
+        torus_ring.translate(-2.2F, 0.25F, -2.F);
+        torus_ring.scale(0.25F,0.25F, 0.25F);
+        torus_ring.draw(shaders);
+
+        shaders.setColor(MyGLRenderer.white);
+        torus_horn.translate(-2.2F, 0.25F, -0.5F);
+        torus_horn.scale(0.25F,0.25F, 0.25F);
+        torus_horn.draw(shaders);
+
+        shaders.setColor(MyGLRenderer.blue);
+        torus_self_intersecting_spindle.translate(-2.2F, 0.5F, 1.F);
+        torus_self_intersecting_spindle.scale(0.25F,0.25F, 0.25F);
+        torus_self_intersecting_spindle.draw(shaders);
 
 
         MainActivity.log("Rendering terminated.");

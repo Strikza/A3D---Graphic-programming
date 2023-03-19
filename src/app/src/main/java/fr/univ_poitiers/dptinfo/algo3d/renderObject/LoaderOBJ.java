@@ -1,22 +1,12 @@
 package fr.univ_poitiers.dptinfo.algo3d.renderObject;
 
 import android.content.Context;
-import android.opengl.GLES20;
-import android.opengl.Matrix;
 import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.List;
-
-import fr.univ_poitiers.dptinfo.algo3d.MyGLRenderer;
-import fr.univ_poitiers.dptinfo.algo3d.NoLightShaders;
 
 /**
  * Class to load OBJ file
@@ -31,6 +21,11 @@ public class LoaderOBJ extends Mesh{
     private int[] textures;
     private int[] normals;
 
+    /**
+     * Constructor of an obj mesh
+     * @param context : context of the application (needed to find obj files)
+     * @param fileName : name of the obj file
+     */
     public LoaderOBJ(Context context, String fileName){
         super(false);
 
@@ -39,7 +34,7 @@ public class LoaderOBJ extends Mesh{
             Log.d(LOG_TAG, "File open");
 
             // Initialization list
-            /**
+            /*
              * 0 : index position
              * 1 : index texture
              * 2 : index normal
@@ -66,6 +61,7 @@ public class LoaderOBJ extends Mesh{
             List<Integer> tmpNormals = new ArrayList<>();
 
             while(data != -1){
+                Log.d(LOG_TAG, "Load started");
                 switch (data){
 
                     case 'v':
@@ -76,10 +72,12 @@ public class LoaderOBJ extends Mesh{
                         switch (data){
 
                             case 't':
+                                Log.d(LOG_TAG, "Texture line found");
                                 current_vertexes = tmpVertextexture;
                                 data = ipst.read();
                                 break;
                             case 'n':
+                                Log.d(LOG_TAG, "Normal line found");
                                 current_vertexes = tmpVertexnormal;
                                 data = ipst.read();
                                 break;
@@ -268,6 +266,7 @@ public class LoaderOBJ extends Mesh{
                 normals[i] = tmpNormals.get(i) - 1;
             }
 
+            Log.d(LOG_TAG, "Load finished");
         } catch (IOException e) {
             Log.d(LOG_TAG, "File not found");
         }

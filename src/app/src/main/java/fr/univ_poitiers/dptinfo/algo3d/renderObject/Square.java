@@ -1,22 +1,14 @@
 package fr.univ_poitiers.dptinfo.algo3d.renderObject;
 
-import android.opengl.GLES20;
-import android.opengl.Matrix;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
-
-import fr.univ_poitiers.dptinfo.algo3d.MyGLRenderer;
-import fr.univ_poitiers.dptinfo.algo3d.NoLightShaders;
-
 /**
  * Class to represent a square
  * @author Samuel Goubeau
  */
 public class Square extends Mesh {
 
+    /**
+     * Constructor for a square
+     */
     public Square(){
         super(true);
 

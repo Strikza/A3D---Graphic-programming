@@ -1,18 +1,8 @@
 package fr.univ_poitiers.dptinfo.algo3d.renderObject;
 
-import android.opengl.GLES20;
-import android.opengl.Matrix;
 import android.util.Pair;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
-
-import fr.univ_poitiers.dptinfo.algo3d.MyGLRenderer;
-import fr.univ_poitiers.dptinfo.algo3d.NoLightShaders;
 
 /**
  * Class to represent an icosphere
@@ -20,14 +10,21 @@ import fr.univ_poitiers.dptinfo.algo3d.NoLightShaders;
  */
 public class Icosphere extends Mesh{
 
+    static final String LOG_TAG = "Icosphere";
+
     private float[] icoVertexpos;
     private int vertexIndex;
 
     private int[] icoTriangles;
     private int triangleIndex;
 
+    // To store middle vetices already known
     private Map<Pair<Integer, Integer>, Integer> middleKnown;
 
+    /**
+     * Constructor for an icosphere
+     * @param nbDiv : number of division to create the sphere
+     */
     public Icosphere(int nbDiv){
         super(false);
 
@@ -59,7 +56,7 @@ public class Icosphere extends Mesh{
 
         if(nbDiv > 0){
             icoTriangles = new int[(int) (3 * 8 * Math.pow(4, nbDiv))];
-            icoVertexpos = new float[icoTriangles.length*3/2 + 6 - icoTriangles.length];
+            icoVertexpos = new float[icoTriangles.length * 3/2 + 6 - icoTriangles.length];
 
             System.arraycopy(vertexpos, 0, icoVertexpos, 0, vertexpos.length);
 
@@ -73,11 +70,19 @@ public class Icosphere extends Mesh{
                 );
             }
 
+            // All things are pointers in Java, isn't that convenient ?
             vertexpos = icoVertexpos;
             triangles = icoTriangles;
         }
     }
 
+    /**
+     * Recursive method to divide triangles and normalize vertices
+     * @param v1 : first vertex
+     * @param v2 : seconde vertex
+     * @param v3 : third vertex
+     * @param nbDiv : number of remaining divisions
+     */
     private void rec_triangleDivision(int v1, int v2, int v3, int nbDiv){
 
         if(nbDiv == 0){
@@ -100,6 +105,12 @@ public class Icosphere extends Mesh{
         }
     }
 
+    /**
+     * Get the vertex normalized at the middle of v1 and v2
+     * @param v1 : first vetex
+     * @param v2 : second vertex
+     * @return : index of new vertex
+     */
     private int getMiddleVertices(int v1, int v2){
 
         float middle_x = (icoVertexpos[v1*3] + icoVertexpos[v2*3])/2;
@@ -108,11 +119,12 @@ public class Icosphere extends Mesh{
 
         double n = Math.sqrt(middle_x*middle_x + middle_y*middle_y + middle_z*middle_z);
 
-        Pair<Integer, Integer> k = (v1 < v2) ? new Pair<>(v1, v2) : new Pair<>(v2, v1);
+        Pair<Integer, Integer> vertices_pair = (v1 < v2) ? new Pair<>(v1, v2) : new Pair<>(v2, v1);
 
-        if(middleKnown.containsKey(k)){
+        // Check if the pair already in the map
+        if(middleKnown.containsKey(vertices_pair)){
 
-            return middleKnown.get(k);
+            return middleKnown.get(vertices_pair);
         }
         else{
 
@@ -122,7 +134,7 @@ public class Icosphere extends Mesh{
             icoVertexpos[vertexIndex + 2] = (float) (middle_z/n);
             vertexIndex += 3;
 
-            middleKnown.put(k, indexMiddle);
+            middleKnown.put(vertices_pair, indexMiddle);
 
             return indexMiddle;
         }

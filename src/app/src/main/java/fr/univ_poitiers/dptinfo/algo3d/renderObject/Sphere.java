@@ -6,14 +6,19 @@ package fr.univ_poitiers.dptinfo.algo3d.renderObject;
  */
 public class Sphere extends Mesh {
 
+    /**
+     * Constructor for a sphere
+     * @param slice : number of slices
+     * @param quarter : number of quarters
+     */
     Sphere(int slice, int quarter) {
         super(false);
 
         float phi = 360 / (float) quarter;
         float theta = 180 / (float) slice;
 
-        /**
-         * Equations :
+        /*
+         * Parametric equation :
          *
          * x = r * cos(phi) * cos(theta)
          * y = r * sin(phi) * cos(theta)
@@ -42,12 +47,12 @@ public class Sphere extends Mesh {
                 vertexpos[vertexIndex] = x_temp;
                 vertexpos[vertexIndex + 1] = y_temp;
                 vertexpos[vertexIndex + 2] = z_temp;
+
                 vertexIndex += 3;
             }
         }
 
-        // Pôle sud //
-
+        // South pole
         x_temp = (float) (Math.cos(Math.toRadians(0)) * Math.cos(Math.toRadians(-90)));
         y_temp = (float) (Math.sin(Math.toRadians(0)) * Math.cos(Math.toRadians(-90)));
         z_temp = (float) Math.sin(Math.toRadians(-90));
@@ -58,8 +63,7 @@ public class Sphere extends Mesh {
 
         vertexIndex += 3;
 
-        // Pôle nord //
-
+        // North pole
         x_temp = (float) (Math.cos(Math.toRadians(0)) * Math.cos(Math.toRadians(90)));
         y_temp = (float) (Math.sin(Math.toRadians(0)) * Math.cos(Math.toRadians(90)));
         z_temp = (float) Math.sin(Math.toRadians(90));
@@ -68,6 +72,7 @@ public class Sphere extends Mesh {
         vertexpos[vertexIndex + 1] = y_temp;
         vertexpos[vertexIndex + 2] = z_temp;
 
+        // Triangles indexes
         int nbTriangles = (quarter * 2) + (((slice - 2) * quarter) * 2);
         triangles = new int[nbTriangles * 3];
         int triangleIndex = 0;
@@ -96,7 +101,7 @@ public class Sphere extends Mesh {
         }
 
 
-        // South //
+        // South pole
         for (int i = 0; i < quarter; ++i) {
 
             triangles[triangleIndex] = nbVertices - 2;
@@ -113,7 +118,7 @@ public class Sphere extends Mesh {
             triangleIndex += 3;
         }
 
-        // North //
+        // North pole
         for (int i = nbVertices - quarter - 2; i < nbVertices - 2; ++i) {
 
             triangles[triangleIndex] = nbVertices - 1;

@@ -41,7 +41,9 @@ public class Room {
     protected ShortBuffer wallbufferS;
     protected ShortBuffer linebufferS;
 
-
+    /**
+     * Constructor for a room
+     */
     public Room(){
 
         modelviewroom=new float[16];
@@ -254,13 +256,13 @@ public class Room {
 
     /**
      * Global function to send buffers to GPU
-     * @param sb
-     * @param s_array
-     * @param glelementbuffer
+     * @param s_array : array where all indexes are stored
+     * @param glelementbuffer : buffer associated to i_array
      */
-    private void send_buffer_to_GPU(ShortBuffer sb, short[] s_array, int glelementbuffer){
+    private void send_buffer_to_GPU(short[] s_array, int glelementbuffer){
 
         ByteBuffer bytebuf;
+        ShortBuffer sb;
 
         bytebuf = ByteBuffer.allocateDirect(s_array.length * Short.BYTES);
         bytebuf.order(ByteOrder.nativeOrder());
@@ -275,6 +277,9 @@ public class Room {
     }
 
 
+    /**
+     * Initializes all buffers witch be sent to the GPU
+     */
     public void initGraphics(){
 
         int[] buffers = new int[5]; // Besoin d’un buffer sur la carte graphique
@@ -286,49 +291,74 @@ public class Room {
         // Floor //
 
         glelementbuffer_floor =buffers[1];
-        send_buffer_to_GPU(floorbufferS, triangles_floor,  glelementbuffer_floor);
+        send_buffer_to_GPU(triangles_floor,  glelementbuffer_floor);
 
 
         // Ceiling //
 
         glelementbuffer_ceiling =buffers[2];
-        send_buffer_to_GPU(ceilingbufferS, triangles_ceiling, glelementbuffer_ceiling);
+        send_buffer_to_GPU(triangles_ceiling, glelementbuffer_ceiling);
 
 
         // Wall //
 
         glelementbuffer_wall =buffers[3];
-        send_buffer_to_GPU(wallbufferS, triangles_wall, glelementbuffer_wall);
+        send_buffer_to_GPU(triangles_wall, glelementbuffer_wall);
 
 
         // Line //
 
         glelementbuffer_line =buffers[4];
-        send_buffer_to_GPU(linebufferS, edge_wall, glelementbuffer_line);
+        send_buffer_to_GPU(edge_wall, glelementbuffer_line);
     }
 
+    /**
+     * Set the current modelview of the mesh with another modelview
+     * @param modelviewmatrix : the modelview that will be copied
+     */
     public void setModelView(final float[] modelviewmatrix){
 
         System.arraycopy(modelviewmatrix, 0, modelviewroom, 0, modelviewmatrix.length);
     }
 
+    /**
+     * Transformation of the mesh by a translation of the modelview
+     * @param x : translation of the position on x
+     * @param y : translation of the position on y
+     * @param z : translation of the position on z
+     */
     public void translate(float x, float y, float z){
 
         Matrix.translateM(modelviewroom,0, x, y, z);
     }
 
+    /**
+     * Transformation of the mesh by a rotation of the modelview
+     * @param x : rotation of the mesh on x
+     * @param y : rotation of the mesh on y
+     * @param z : rotation of the mesh on z
+     */
     public void rotate(float angle, float x, float y, float z){
 
         Matrix.rotateM(modelviewroom, 0, angle, x, y, z);
     }
 
+    /**
+     * Transformation of the mesh by a scale of the modelview
+     * @param x : scale of all vertices on x
+     * @param y : scale of all vertices on y
+     * @param z : scale of all vertices on z
+     */
     public void scale(float x, float y, float z){
 
         Matrix.scaleM(modelviewroom, 0, x, y, z);
     }
 
-
-    public void drawFloor(final NoLightShaders shaders)
+    /**
+     * Draw the floor
+     * @param shaders : Shader to represent the mesh
+     */
+    private void drawFloor(final NoLightShaders shaders)
     {
         shaders.setModelViewMatrix(modelviewroom);
 
@@ -341,7 +371,11 @@ public class Room {
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER,0);
     }
 
-    public void drawCeiling(final NoLightShaders shaders)
+    /**
+     * Draw the ceilling
+     * @param shaders : Shader to represent the mesh
+     */
+    private void drawCeiling(final NoLightShaders shaders)
     {
         shaders.setModelViewMatrix(modelviewroom);
 
@@ -354,7 +388,11 @@ public class Room {
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER,0);
     }
 
-    public void drawWall(final NoLightShaders shaders)
+    /**
+     * Draw the walls
+     * @param shaders : Shader to represent the mesh
+     */
+    private void drawWall(final NoLightShaders shaders)
     {
         shaders.setModelViewMatrix(modelviewroom);
 
@@ -374,5 +412,24 @@ public class Room {
 
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER,0);
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER,0);
+    }
+
+    /**
+     * Draw the room
+     * @param shaders : Shader to represent the mesh
+     * @param color_floor : the color of the floor
+     * @param color_ceilling : the color of the ceilling
+     * @param color_wall : color of the wall
+     */
+    public void draw(final NoLightShaders shaders, float[] color_floor, float[] color_ceilling, float[] color_wall){
+
+        shaders.setColor(color_floor);
+        drawFloor(shaders);
+
+        shaders.setColor(color_ceilling);
+        drawCeiling(shaders);
+
+        shaders.setColor(color_wall);
+        drawWall(shaders);
     }
 }
