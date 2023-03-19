@@ -10,6 +10,7 @@ import fr.univ_poitiers.dptinfo.algo3d.renderObject.Icosphere;
 import fr.univ_poitiers.dptinfo.algo3d.renderObject.LoaderOBJ;
 import fr.univ_poitiers.dptinfo.algo3d.renderObject.Room;
 import fr.univ_poitiers.dptinfo.algo3d.renderObject.Square;
+import fr.univ_poitiers.dptinfo.algo3d.renderObject.Torus;
 
 /**
  * Class to represent the scene. It includes all the objects to display, in this case a room
@@ -63,6 +64,11 @@ public class Scene
      */
     Icosphere icosphere;
 
+    /**
+     * Torus object
+     */
+    Torus torus;
+
 
     /**
      * Constructor : build each wall, the floor and the ceiling as quads
@@ -96,6 +102,7 @@ public class Scene
         support = new Square();
         square = new Square();
         icosphere = new Icosphere(3);
+        torus = new Torus(49, 49,1F, 0.5F);
     }
 
 
@@ -117,6 +124,7 @@ public class Scene
         support.initGraphics();
         square.initGraphics();
         icosphere.initGraphics();
+        torus.initGraphics();
 
         MainActivity.log("Initializing graphics");
         // Set the background frame color
@@ -169,6 +177,7 @@ public class Scene
         support.setModelView(modelviewmatrix);
         square.setModelView(modelviewmatrix);
         icosphere.setModelView(modelviewmatrix);
+        torus.setModelView(modelviewmatrix);
 
 
         // 1st room
@@ -263,6 +272,14 @@ public class Scene
         icosphere.translate(0.F, 1.25F, -7.F);
         icosphere.scale(1.25F, 1.25F, 1.25F);
         icosphere.draw(shaders);
+
+
+        //Torus
+        shaders.setColor(MyGLRenderer.lightgray);
+        torus.translate(0.F, 0.5F, -3.F);
+        torus.scale(0.5F,0.5F, 0.5F);
+        torus.draw(shaders);
+
 
         MainActivity.log("Rendering terminated.");
     }

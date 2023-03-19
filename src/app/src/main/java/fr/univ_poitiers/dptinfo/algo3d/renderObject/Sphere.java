@@ -27,6 +27,8 @@ public class Sphere {
     private float[] vertexpos;
     private int[] triangles;
     private int vertexIndex;
+    private int triangleIndex;
+    private int nbVertices;
     private int nbTriangles;
 
     protected IntBuffer spherebufferI;
@@ -40,20 +42,20 @@ public class Sphere {
         nb_quarter = quarter;
 
         phi = 360/(float)nb_quarter;
-        theta = 180/(float)(nb_slice);
+        theta = 180/(float)nb_slice;
 
         modelviewsphere=new float[16];
 
         /**
          * Equations :
          *
-         * x = r * cos(phi) * cos(theta) + xc
-         * y = r * sin(phi) * cos(theta) + yc
-         * z = r * sin(theta) + zc
+         * x = r * cos(phi) * cos(theta)
+         * y = r * sin(phi) * cos(theta)
+         * z = r * sin(theta)
          *
          * here => r == 1.0F
          */
-        int nbVertices = ((nb_slice-1) * nb_quarter)+2;
+        nbVertices = ((nb_slice-1) * nb_quarter)+2;
         vertexpos = new float[nbVertices*3];
         vertexIndex = 0;
 
@@ -61,9 +63,9 @@ public class Sphere {
         float y_temp;
         float z_temp;
 
-        for (float s = -90.F + theta; s <= 90.F-theta; s += theta) {
+        for (float s = -90.F + theta; s < 90.F; s += theta) {
 
-            for (float q = 0; q<360; q += phi) {
+            for (float q = 0.F; q<360.F; q += phi) {
 
                 x_temp = (float) (Math.cos(Math.toRadians(q)) * Math.cos(Math.toRadians(s)));
                 y_temp = (float) (Math.sin(Math.toRadians(q)) * Math.cos(Math.toRadians(s)));
@@ -100,68 +102,67 @@ public class Sphere {
 
         nbTriangles = (nb_quarter * 2) + (((nb_slice - 2) * nb_quarter) * 2);
         triangles = new int[nbTriangles * 3];
+        triangleIndex = 0;
 
-
-        int i_triangle = 0;
         for(int i=0; i<(nbVertices-nb_quarter-2); ++i){
 
             if((i+1)%nb_quarter == 0){
 
-                triangles[i_triangle] = i;
-                triangles[i_triangle+1] = i-nb_quarter+1;
-                triangles[i_triangle+2] = i+nb_quarter;
-                triangles[i_triangle+3] = i+1;
-                triangles[i_triangle+4] = i+nb_quarter;
-                triangles[i_triangle+5] = i-nb_quarter+1;
+                triangles[triangleIndex] = i;
+                triangles[triangleIndex+1] = i-nb_quarter+1;
+                triangles[triangleIndex+2] = i+nb_quarter;
+                triangles[triangleIndex+3] = i+1;
+                triangles[triangleIndex+4] = i+nb_quarter;
+                triangles[triangleIndex+5] = i-nb_quarter+1;
             }
             else{
 
-                triangles[i_triangle] = i;
-                triangles[i_triangle+1] = i+1;
-                triangles[i_triangle+2] = i+nb_quarter;
-                triangles[i_triangle+3] = i+nb_quarter+1;
-                triangles[i_triangle+4] = i+nb_quarter;
-                triangles[i_triangle+5] = i+1;
+                triangles[triangleIndex] = i;
+                triangles[triangleIndex+1] = i+1;
+                triangles[triangleIndex+2] = i+nb_quarter;
+                triangles[triangleIndex+3] = i+nb_quarter+1;
+                triangles[triangleIndex+4] = i+nb_quarter;
+                triangles[triangleIndex+5] = i+1;
             }
 
-            i_triangle+=6;
+            triangleIndex+=6;
         }
 
 
         // South //
         for(int i=0; i<nb_quarter; ++i){
 
-            triangles[i_triangle] = nbVertices - 2;
-            triangles[i_triangle + 1] = i;
+            triangles[triangleIndex] = nbVertices - 2;
+            triangles[triangleIndex + 1] = i;
 
             if(i == 0){
 
-                triangles[i_triangle+2] = i+nb_quarter-1;
+                triangles[triangleIndex+2] = i+nb_quarter-1;
             }
             else {
 
-                triangles[i_triangle+2] = i - 1;
+                triangles[triangleIndex+2] = i - 1;
             }
 
-            i_triangle +=3;
+            triangleIndex +=3;
         }
 
         // North //
         for(int i=nbVertices-nb_quarter-2; i<nbVertices-2; ++i){
 
-            triangles[i_triangle] = nbVertices - 1;
-            triangles[i_triangle + 2] = i;
+            triangles[triangleIndex] = nbVertices - 1;
+            triangles[triangleIndex + 2] = i;
 
             if(i == nbVertices-nb_quarter-2){
 
-                triangles[i_triangle+1] = nbVertices-3;
+                triangles[triangleIndex+1] = nbVertices-3;
             }
             else {
 
-                triangles[i_triangle+1] = i-1;
+                triangles[triangleIndex+1] = i-1;
             }
 
-            i_triangle +=3;
+            triangleIndex +=3;
         }
     }
 

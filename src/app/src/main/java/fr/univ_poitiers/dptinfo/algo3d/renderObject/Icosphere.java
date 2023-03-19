@@ -91,8 +91,8 @@ public class Icosphere {
         if(nbDiv == 0){
 
             icoTriangles[triangleIndex] = v1;
-            icoTriangles[triangleIndex+1] = v2;
-            icoTriangles[triangleIndex+2] = v3;
+            icoTriangles[triangleIndex + 1] = v2;
+            icoTriangles[triangleIndex + 2] = v3;
             triangleIndex += 3;
         }
         else{
@@ -126,8 +126,8 @@ public class Icosphere {
 
             int indexMiddle = vertexIndex/3;
             icoVertexpos[vertexIndex] = (float) (middle_x/n);
-            icoVertexpos[vertexIndex+1] = (float) (middle_y/n);
-            icoVertexpos[vertexIndex+2] = (float) (middle_z/n);
+            icoVertexpos[vertexIndex + 1] = (float) (middle_y/n);
+            icoVertexpos[vertexIndex + 2] = (float) (middle_z/n);
             vertexIndex += 3;
 
             middleKnown.put(k, indexMiddle);
