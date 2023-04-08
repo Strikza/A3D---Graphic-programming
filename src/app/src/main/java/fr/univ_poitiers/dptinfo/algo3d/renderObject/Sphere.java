@@ -28,6 +28,7 @@ public class Sphere extends Mesh {
          */
         int nbVertices = ((slice - 1) * quarter) + 2;
         vertexpos = new float[nbVertices * 3];
+        normals = new float[nbVertices * 3];
         int vertexIndex = 0;
 
         float x_temp;
@@ -48,6 +49,10 @@ public class Sphere extends Mesh {
                 vertexpos[vertexIndex + 1] = y_temp;
                 vertexpos[vertexIndex + 2] = z_temp;
 
+                normals[vertexIndex] = x_temp;
+                normals[vertexIndex + 1] = y_temp;
+                normals[vertexIndex + 2] = z_temp;
+
                 vertexIndex += 3;
             }
         }
@@ -61,6 +66,10 @@ public class Sphere extends Mesh {
         vertexpos[vertexIndex + 1] = y_temp;
         vertexpos[vertexIndex + 2] = z_temp;
 
+        normals[vertexIndex] = x_temp;
+        normals[vertexIndex + 1] = y_temp;
+        normals[vertexIndex + 2] = z_temp;
+
         vertexIndex += 3;
 
         // North pole
@@ -71,6 +80,10 @@ public class Sphere extends Mesh {
         vertexpos[vertexIndex] = x_temp;
         vertexpos[vertexIndex + 1] = y_temp;
         vertexpos[vertexIndex + 2] = z_temp;
+
+        normals[vertexIndex] = x_temp;
+        normals[vertexIndex + 1] = y_temp;
+        normals[vertexIndex + 2] = z_temp;
 
         // Triangles indexes
         int nbTriangles = (quarter * 2) + (((slice - 2) * quarter) * 2);

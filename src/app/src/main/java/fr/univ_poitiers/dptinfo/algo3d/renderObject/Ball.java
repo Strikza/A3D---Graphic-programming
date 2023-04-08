@@ -1,6 +1,6 @@
 package fr.univ_poitiers.dptinfo.algo3d.renderObject;
 
-import fr.univ_poitiers.dptinfo.algo3d.NoLightShaders;
+import fr.univ_poitiers.dptinfo.algo3d.shaders.LightingShaders;
 
 /**
  * Class to represent a ball
@@ -35,9 +35,9 @@ public class Ball {
     /**
      * Initializes graphics by calling initGraphics from s
      */
-    public void initGraphics(){
+    public void initGraphics(LightingShaders shaders){
 
-        s.initGraphics();
+        s.initGraphics(shaders);
     }
 
     /**
@@ -52,7 +52,7 @@ public class Ball {
      * Draw the sphere by calling draw from s, after all transformations needed
      * @param shaders
      */
-    public void draw(final NoLightShaders shaders) {
+    public void draw(final LightingShaders shaders) {
 
         s.translate(posx, radius, posz);
         // Whithout this, the sphere isn't well oriented

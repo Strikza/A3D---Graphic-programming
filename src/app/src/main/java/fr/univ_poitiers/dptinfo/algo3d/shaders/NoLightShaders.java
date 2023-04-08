@@ -1,9 +1,7 @@
-package fr.univ_poitiers.dptinfo.algo3d;
+package fr.univ_poitiers.dptinfo.algo3d.shaders;
 
 import android.content.Context;
 import android.opengl.GLES20;
-
-import java.nio.FloatBuffer;
 
 /**
  * Implementation class to manipulate shaders for non-lighted objects (uniform color).
@@ -32,7 +30,7 @@ public class NoLightShaders extends BasicShaders
         // return initializeShaders(gl,VERTSRC,FRAGSRC);
 
         // Second method : get shader codes from ressource files
-        return initializeShadersFromResources(context,"nolight_vert.glsl","nolight_frag.glsl");
+        return initializeShadersFromResources(context, "nolight_vert.glsl", "nolight_frag.glsl");
     }
 
     /**

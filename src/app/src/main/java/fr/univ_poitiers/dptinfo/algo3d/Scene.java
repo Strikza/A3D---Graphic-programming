@@ -11,6 +11,7 @@ import fr.univ_poitiers.dptinfo.algo3d.renderObject.LoaderOBJ;
 import fr.univ_poitiers.dptinfo.algo3d.renderObject.Room;
 import fr.univ_poitiers.dptinfo.algo3d.renderObject.Square;
 import fr.univ_poitiers.dptinfo.algo3d.renderObject.Torus;
+import fr.univ_poitiers.dptinfo.algo3d.shaders.BlinnPhongShaders;
 
 /**
  * Class to represent the scene. It includes all the objects to display, in this case a room
@@ -81,6 +82,15 @@ public class Scene
     Torus torus_horn;
     Torus torus_self_intersecting_spindle;
 
+    /**
+     * Shader
+     */
+    BlinnPhongShaders shaders;
+
+    /**
+     * Specular light
+     */
+    final float[] SPECULAR_LIGHT = MyGLRenderer.white;
 
     /**
      * Constructor : build each wall, the floor and the ceiling as quads
@@ -130,23 +140,33 @@ public class Scene
      */
     public void initGraphics(MyGLRenderer renderer)
     {
-        room.initGraphics();
-        ball1.initGraphics();
-        ball2.initGraphics();
-        drk_sword.initGraphics();
-        drk_sword_lux.initGraphics();
-        cow.initGraphics();
-        toy_chest.initGraphics();
-        turtle.initGraphics();
-        pig.initGraphics();
-        support.initGraphics();
-        square.initGraphics();
-        icosphere_div0.initGraphics();
-        icosphere_div2.initGraphics();
-        icosphere_div4.initGraphics();
-        torus_ring.initGraphics();
-        torus_horn.initGraphics();
-        torus_self_intersecting_spindle.initGraphics();
+        // Initialize all specificities of current shaders
+        shaders = (BlinnPhongShaders) renderer.getShaders();
+        shaders.setAmbiantLight(MyGLRenderer.darkgray);
+        shaders.setLightColor(MyGLRenderer.lightgray);
+        shaders.setLightSpecular(SPECULAR_LIGHT);
+        shaders.setLightAttenuation(.5f, .1f, .1f);
+        shaders.setLightPosition(new float[]{0.f, 0.f, 0.f});
+        shaders.setLighting(true);
+
+        // Initialize all objects
+        room.initGraphics(shaders);
+        ball1.initGraphics(shaders);
+        ball2.initGraphics(shaders);
+        drk_sword.initGraphics(shaders);
+        drk_sword_lux.initGraphics(shaders);
+        cow.initGraphics(shaders);
+        toy_chest.initGraphics(shaders);
+        turtle.initGraphics(shaders);
+        pig.initGraphics(shaders);
+        support.initGraphics(shaders);
+        square.initGraphics(shaders);
+        icosphere_div0.initGraphics(shaders);
+        icosphere_div2.initGraphics(shaders);
+        icosphere_div4.initGraphics(shaders);
+        torus_ring.initGraphics(shaders);
+        torus_horn.initGraphics(shaders);
+        torus_self_intersecting_spindle.initGraphics(shaders);
 
         MainActivity.log("Initializing graphics");
         // Set the background frame color
@@ -173,9 +193,6 @@ public class Scene
 
         MainActivity.log("Starting rendering");
 
-        // Get shader to send uniform data
-        NoLightShaders shaders=renderer.getShaders();
-
         // Place viewer in the right position and orientation
         Matrix.setIdentityM(modelviewmatrix,0);
 
@@ -184,7 +201,6 @@ public class Scene
         Matrix.rotateM(modelviewmatrix,0,angley,0.F,1.0F,0.0F);
         Matrix.translateM(modelviewmatrix,0,posx,0.F,posz);
         Matrix.translateM(modelviewmatrix,0,0.F,-1.6F,0.F);
-
 
         // Set ModelView for objects
         room.setModelView(modelviewmatrix);
@@ -223,103 +239,139 @@ public class Scene
                 shaders,
                 MyGLRenderer.white,
                 MyGLRenderer.darkgray,
-                MyGLRenderer.gray
+                MyGLRenderer.yellow
         );
 
 
         // Balls
-        shaders.setColor(MyGLRenderer.cyan);
+        shaders.setMaterialColor(MyGLRenderer.cyan);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
         ball1.draw(shaders);
-        shaders.setColor(MyGLRenderer.orange);
+
+        shaders.setMaterialColor(MyGLRenderer.orange);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
         ball2.draw(shaders);
 
 
         //OBJ
-        shaders.setColor(MyGLRenderer.lightgray);
+        shaders.setMaterialColor(MyGLRenderer.lightgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
         drk_sword.translate(-2.0F,1.8F, 2.9F);
         drk_sword.rotate(180.0F, 0.0F, 0.0F, 1.0F);
         drk_sword.draw(shaders);
 
-        shaders.setColor(MyGLRenderer.lightgray);
+        shaders.setMaterialColor(MyGLRenderer.lightgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
         drk_sword_lux.translate(-1.0F,1.8F, 2.9F);
         drk_sword_lux.rotate(180.0F, 0.0F, 0.0F, 1.0F);
         drk_sword_lux.draw(shaders);
 
-        shaders.setColor(MyGLRenderer.lightgray);
+        shaders.setMaterialColor(MyGLRenderer.lightgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
         cow.translate(1.8F, 0.91F, 1.8F);
         cow.rotate(135.F, 0.F, 1.F, 0.F);
         cow.scale(0.25F, 0.25f, 0.25f);
         cow.draw(shaders);
 
-        shaders.setColor(MyGLRenderer.lightgray);
+        shaders.setMaterialColor(MyGLRenderer.lightgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
         toy_chest.translate(-1.5F,0.5F, 2.65F);
         toy_chest.rotate(180.0F, 0.0F, 1.0F, 0.0F);
         toy_chest.draw(shaders);
 
-        shaders.setColor(MyGLRenderer.lightgray);
+        shaders.setMaterialColor(MyGLRenderer.lightgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
         turtle.translate(-2.65F, 1.96F, -3.35F);
         turtle.rotate(135.0F, 0.0F, 1.0F, 0.0F);
         turtle.draw(shaders);
 
-        shaders.setColor(MyGLRenderer.lightgray);
+        shaders.setMaterialColor(MyGLRenderer.lightgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
         pig.translate(1.925F, 0.F, -4.065F);
         pig.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
         pig.scale(4.F, 4.F, 4.F);
         pig.draw(shaders);
 
-
         //Square
-        shaders.setColor(MyGLRenderer.lightgray);
+        shaders.setMaterialColor(MyGLRenderer.lightgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
         support.translate(-1.75F, 0.0F, 2.4F);
         support.rotate(-90.0F, 0.0F, 1.0F, 0.0F);
         support.scale(0.5F, 0.5F, 0.5F);
         support.draw(shaders);
 
-        shaders.setColor(MyGLRenderer.blue);
+        shaders.setMaterialColor(MyGLRenderer.blue);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
         square.translate(-2.9F, 0.0F, -3.1F);
         square.scale(0.8F, 0.8F, 0.8F);
         square.draw(shaders);
 
-        shaders.setColor(MyGLRenderer.yellow);
+        shaders.setMaterialColor(MyGLRenderer.yellow);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
         square.translate(-0.0F, 1.0F, 0.0F);
         square.scale(0.8F, 0.8F, 0.8F);
         square.draw(shaders);
 
-        shaders.setColor(MyGLRenderer.green);
+        shaders.setMaterialColor(MyGLRenderer.green);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
         square.translate(-0.0F, 1.0F, 0.0F);
         square.scale(0.8F, 0.8F, 0.8F);
         square.draw(shaders);
 
 
         //Icosphere
-        shaders.setColor(MyGLRenderer.yellow);
+        shaders.setMaterialColor(MyGLRenderer.yellow);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
         icosphere_div0.translate(-2.F, 1.25F, -7.F);
         icosphere_div0.scale(0.75F, 0.75F, 0.75F);
         icosphere_div0.draw(shaders);
 
-        shaders.setColor(MyGLRenderer.yellow);
+        shaders.setMaterialColor(MyGLRenderer.yellow);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
         icosphere_div2.translate(0.F, 1.25F, -7.F);
         icosphere_div2.scale(0.75F, 0.75F, 0.75F);
         icosphere_div2.draw(shaders);
 
-        shaders.setColor(MyGLRenderer.yellow);
+        shaders.setMaterialColor(MyGLRenderer.yellow);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
         icosphere_div4.translate(2.F, 1.25F, -7.F);
         icosphere_div4.scale(0.75F, 0.75F, 0.75F);
         icosphere_div4.draw(shaders);
 
 
         //Torus
-        shaders.setColor(MyGLRenderer.red);
+        shaders.setMaterialColor(MyGLRenderer.red);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
         torus_ring.translate(-2.2F, 0.25F, -2.F);
         torus_ring.scale(0.25F,0.25F, 0.25F);
         torus_ring.draw(shaders);
 
-        shaders.setColor(MyGLRenderer.white);
+        shaders.setMaterialColor(MyGLRenderer.white);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
         torus_horn.translate(-2.2F, 0.25F, -0.5F);
         torus_horn.scale(0.25F,0.25F, 0.25F);
         torus_horn.draw(shaders);
 
-        shaders.setColor(MyGLRenderer.blue);
+        shaders.setMaterialColor(MyGLRenderer.blue);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
         torus_self_intersecting_spindle.translate(-2.2F, 0.5F, 1.F);
         torus_self_intersecting_spindle.scale(0.25F,0.25F, 0.25F);
         torus_self_intersecting_spindle.draw(shaders);

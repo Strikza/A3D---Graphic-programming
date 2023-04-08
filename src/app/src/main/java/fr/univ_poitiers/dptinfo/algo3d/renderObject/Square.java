@@ -10,7 +10,7 @@ public class Square extends Mesh {
      * Constructor for a square
      */
     public Square(){
-        super(true);
+        super(false);
 
         vertexpos = new float[]{
 
@@ -22,6 +22,18 @@ public class Square extends Mesh {
                 1.0F, 0.0F, -1.0F,
                 1.0F, 1.0F, -1.0F,
                 0.0F, 1.0F, -1.0F
+        };
+
+        normals = new float[]{
+
+                -1.f, -1.f, 1.f,
+                2.f, -1.f, 1.f,
+                2.f, 2.f, 1.f,
+                -1.f, 2.f, 1.f,
+                -1.f, -1.f, -2.f,
+                2.f, -1.f, -2.f,
+                2.f, 2.f, -2.f,
+                -1.f, 2.f, -2.f
         };
 
         triangles = new int[]{

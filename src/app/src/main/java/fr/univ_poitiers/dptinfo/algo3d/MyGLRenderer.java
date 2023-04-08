@@ -10,7 +10,9 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
-import android.util.Log;
+
+import fr.univ_poitiers.dptinfo.algo3d.shaders.BlinnPhongShaders;
+import fr.univ_poitiers.dptinfo.algo3d.shaders.LightingShaders;
 
 
 /**
@@ -46,7 +48,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
     /**
      * Shaders
      */
-    private NoLightShaders shaders;
+    private BlinnPhongShaders shaders;
     /**
      * Projection matrix to provide to the shader
      */
@@ -55,7 +57,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
     /**
      * @return the current Shader
      */
-    public NoLightShaders getShaders()
+    public LightingShaders getShaders()
     {
         return this.shaders;
     }
@@ -97,7 +99,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
     {
         // Create shader
         try {
-            this.shaders = new NoLightShaders(view.getContext()); // or other shaders
+            this.shaders = new BlinnPhongShaders(view.getContext()); // or other shaders
             checkGlError("Shader Creation");
         }
         catch (Exception e)

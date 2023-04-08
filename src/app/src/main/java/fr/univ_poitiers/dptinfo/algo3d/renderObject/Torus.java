@@ -32,6 +32,7 @@ public class Torus extends Mesh {
          */
         int nbVertices = (quarter+1) * (slice+1);
         vertexpos = new float[nbVertices * 3];
+        normals = new float[nbVertices * 3];
         int vertexIndex = 0;
 
         float x_temp;
@@ -51,6 +52,11 @@ public class Torus extends Mesh {
                 vertexpos[vertexIndex] = x_temp;
                 vertexpos[vertexIndex + 1] = y_temp;
                 vertexpos[vertexIndex + 2] = z_temp;
+
+                normals[vertexIndex] = (float) ((R + (r+1) * Math.cos(phiRad)) * Math.cos(thetaRad) - vertexpos[vertexIndex]);
+                normals[vertexIndex + 1] = (float) ((r+1) * Math.sin(phiRad) - vertexpos[vertexIndex + 1]);
+                normals[vertexIndex + 2] = (float) ((R + (r+1) * Math.cos(phiRad)) * Math.sin(thetaRad) - vertexpos[vertexIndex + 2]);
+
                 vertexIndex += 3;
             }
         }

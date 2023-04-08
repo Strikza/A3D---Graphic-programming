@@ -17,9 +17,7 @@ public class LoaderOBJ extends Mesh{
     static final String LOG_TAG = "LoaderOBJ";
 
     private float[] vertextexture;
-    private float[] vertexnormal;
     private int[] textures;
-    private int[] normals;
 
     /**
      * Constructor of an obj mesh
@@ -239,10 +237,10 @@ public class LoaderOBJ extends Mesh{
             }
 
             // Initialization of vextexnormal
-            vertexnormal = new float[tmpVertexnormal.size()];
+            normals = new float[tmpVertexnormal.size()];
             for(int i = 0; i<tmpVertexnormal.size(); i++){
 
-                vertexnormal[i] = tmpVertexnormal.get(i);
+                normals[i] = tmpVertexnormal.get(i);
             }
 
             // Initialization of triangles
@@ -257,13 +255,6 @@ public class LoaderOBJ extends Mesh{
             for(int i = 0; i<tmpTextures.size(); i++){
 
                 textures[i] = tmpTextures.get(i) - 1;
-            }
-
-            // Initialization of normals
-            normals = new int[tmpNormals.size()];
-            for(int i = 0; i<tmpNormals.size(); i++){
-
-                normals[i] = tmpNormals.get(i) - 1;
             }
 
             Log.d(LOG_TAG, "Load finished");

@@ -8,8 +8,7 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import fr.univ_poitiers.dptinfo.algo3d.MyGLRenderer;
-import fr.univ_poitiers.dptinfo.algo3d.NoLightShaders;
+import fr.univ_poitiers.dptinfo.algo3d.shaders.LightingShaders;
 
 /**
  * Based class to represent a mesh, with all basics methods
@@ -20,11 +19,13 @@ public class Mesh {
     static final String LOG_TAG = "Mesh";
 
     protected float[] vertexpos;
+    protected float[] normals;
     protected int[] triangles;
     protected int[] edges;
 
     private int glelementbuffer;
     private int glposbuffer_vertex;
+    private int glposbuffer_normal;
     private int glelementbuffer_line;
 
     private boolean hasEdge;
@@ -62,6 +63,26 @@ public class Mesh {
     }
 
     /**
+     * Send normals to GPU's buffer
+     */
+    private void send_normals_to_GPU(){
+        ByteBuffer bytebuf = ByteBuffer.allocateDirect(normals.length * Float.BYTES);
+        bytebuf.order(ByteOrder.nativeOrder());
+        FloatBuffer fb = bytebuf.asFloatBuffer();
+        fb.put(normals);
+        fb.position(0);
+
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, glposbuffer_normal);
+        GLES20.glBufferData(
+                GLES20.GL_ARRAY_BUFFER,
+                normals.length * Float.BYTES,
+                fb,
+                GLES20.GL_STATIC_DRAW
+        );
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER,0);
+    }
+
+    /**
      * Global function to send buffers to GPU
      * @param i_array : array where all indexes are stored
      * @param glelementbuffer : buffer associated to i_array
@@ -78,36 +99,45 @@ public class Mesh {
         ib.position(0);
 
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, glelementbuffer);
-        GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER, i_array.length * Integer.BYTES,
-                ib, GLES20.GL_STATIC_DRAW);
+        GLES20.glBufferData(
+                GLES20.GL_ELEMENT_ARRAY_BUFFER,
+                i_array.length * Integer.BYTES,
+                ib,
+                GLES20.GL_STATIC_DRAW
+        );
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER,0);
     }
 
     /**
      * Initializes all buffers witch be sent to the GPU
      */
-    public void initGraphics(){
+    public void initGraphics(LightingShaders shaders){
+
+        shaders.setNormalizing(true);
 
         int[] buffers;
 
         if(hasEdge){
 
-            buffers = new int[3];
-            GLES20.glGenBuffers(3, buffers, 0);
+            buffers = new int[4];
+            GLES20.glGenBuffers(4, buffers, 0);
 
-            glelementbuffer_line = buffers[2];
+            glelementbuffer_line = buffers[3];
             send_buffer_to_GPU(edges, glelementbuffer_line);
         }
         else{
 
-            buffers = new int[2];
-            GLES20.glGenBuffers(2, buffers, 0);
+            buffers = new int[3];
+            GLES20.glGenBuffers(3, buffers, 0);
         }
 
         glposbuffer_vertex = buffers[0];
         send_vertexes_to_GPU();
 
-        glelementbuffer = buffers[1];
+        glposbuffer_normal = buffers[1];
+        send_normals_to_GPU();
+
+        glelementbuffer = buffers[2];
         send_buffer_to_GPU(triangles,  glelementbuffer);
 
     }
@@ -158,7 +188,7 @@ public class Mesh {
      * Draw the current mesh
      * @param shaders : Shader to represent the mesh
      */
-    public void draw(final NoLightShaders shaders){
+    public void draw(final LightingShaders shaders){
 
         shaders.setModelViewMatrix(modelview);
 
@@ -166,25 +196,29 @@ public class Mesh {
         shaders.setPositionsPointer(3,GLES20.GL_FLOAT);
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, glelementbuffer);
 
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, glposbuffer_normal);
+        shaders.setNormalsPointer(3, GLES20.GL_FLOAT);
+        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, glelementbuffer);
+
         GLES20.glPolygonOffset(2.F,4.F);
         GLES20.glEnable(GLES20.GL_POLYGON_OFFSET_FILL);
 
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, triangles.length, GLES20.GL_UNSIGNED_INT, 0);
         GLES20.glDisable(GLES20.GL_POLYGON_OFFSET_FILL);
-        shaders.setColor(MyGLRenderer.black);
-
-        if(hasEdge){
-
-            GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, glelementbuffer_line);
-            GLES20.glDrawElements(GLES20.GL_LINES, edges.length,GLES20.GL_UNSIGNED_INT, 0);
-        }
-        else{
-
-            for(int i=0; i<triangles.length; i+=3){
-
-                GLES20.glDrawElements(GLES20.GL_LINE_LOOP, 3, GLES20.GL_UNSIGNED_INT, i*Integer.BYTES);
-            }
-        }
+//        shaders.setMaterialColor(MyGLRenderer.black);
+//
+//        if(hasEdge){
+//
+//            GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, glelementbuffer_line);
+//            GLES20.glDrawElements(GLES20.GL_LINES, edges.length,GLES20.GL_UNSIGNED_INT, 0);
+//        }
+//        else{
+//
+//            for(int i=0; i<triangles.length; i+=3){
+//
+//                GLES20.glDrawElements(GLES20.GL_LINE_LOOP, 3, GLES20.GL_UNSIGNED_INT, i*Integer.BYTES);
+//            }
+//        }
 
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER,0);
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER,0);

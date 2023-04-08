@@ -5,7 +5,8 @@ import android.opengl.GLES20;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
+
+import fr.univ_poitiers.dptinfo.algo3d.shaders.NoLightShaders;
 
 /**
  * Creation of graphics quad composed of triangles, stored in a vertex array

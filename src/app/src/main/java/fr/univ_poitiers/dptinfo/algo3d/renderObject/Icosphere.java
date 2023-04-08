@@ -41,6 +41,8 @@ public class Icosphere extends Mesh{
         };
         vertexIndex = vertexpos.length;
 
+        normals = vertexpos;
+
         triangles = new int[]{
 
                 0, 1, 2,
@@ -59,6 +61,7 @@ public class Icosphere extends Mesh{
             icoVertexpos = new float[icoTriangles.length * 3/2 + 6 - icoTriangles.length];
 
             System.arraycopy(vertexpos, 0, icoVertexpos, 0, vertexpos.length);
+            System.arraycopy(vertexpos, 0, normals, 0, vertexpos.length);
 
             for(int i=0; i<triangles.length; i+=3){
 
@@ -72,6 +75,7 @@ public class Icosphere extends Mesh{
 
             // All things are pointers in Java, isn't that convenient ?
             vertexpos = icoVertexpos;
+            normals = icoVertexpos;
             triangles = icoTriangles;
         }
     }
@@ -90,6 +94,7 @@ public class Icosphere extends Mesh{
             icoTriangles[triangleIndex] = v1;
             icoTriangles[triangleIndex + 1] = v2;
             icoTriangles[triangleIndex + 2] = v3;
+
             triangleIndex += 3;
         }
         else{
@@ -132,6 +137,7 @@ public class Icosphere extends Mesh{
             icoVertexpos[vertexIndex] = (float) (middle_x/n);
             icoVertexpos[vertexIndex + 1] = (float) (middle_y/n);
             icoVertexpos[vertexIndex + 2] = (float) (middle_z/n);
+
             vertexIndex += 3;
 
             middleKnown.put(vertices_pair, indexMiddle);
