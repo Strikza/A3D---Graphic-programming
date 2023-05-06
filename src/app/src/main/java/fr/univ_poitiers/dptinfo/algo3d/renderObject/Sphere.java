@@ -11,8 +11,8 @@ public class Sphere extends Mesh {
      * @param slice : number of slices
      * @param quarter : number of quarters
      */
-    Sphere(int slice, int quarter) {
-        super(false);
+    Sphere(int slice, int quarter, boolean hasTexture) {
+        super(hasTexture);
 
         float phi = 360 / (float) quarter;
         float theta = 180 / (float) slice;
@@ -29,7 +29,9 @@ public class Sphere extends Mesh {
         int nbVertices = ((slice - 1) * quarter) + 2;
         vertexpos = new float[nbVertices * 3];
         normals = new float[nbVertices * 3];
+        textures = new float[nbVertices * 2];
         int vertexIndex = 0;
+        int textureIndex = 0;
 
         float x_temp;
         float y_temp;
@@ -53,7 +55,11 @@ public class Sphere extends Mesh {
                 normals[vertexIndex + 1] = y_temp;
                 normals[vertexIndex + 2] = z_temp;
 
+                textures[textureIndex] = (float) (phiRad / (2 * Math.PI));
+                textures[textureIndex + 1] = (float) (thetaRad / Math.PI + 0.5);
+
                 vertexIndex += 3;
+                textureIndex += 2;
             }
         }
 
@@ -70,7 +76,11 @@ public class Sphere extends Mesh {
         normals[vertexIndex + 1] = y_temp;
         normals[vertexIndex + 2] = z_temp;
 
+        textures[textureIndex] = 1.f;
+        textures[textureIndex + 1] = 0.f;
+
         vertexIndex += 3;
+        textureIndex += 2;
 
         // North pole
         x_temp = (float) (Math.cos(Math.toRadians(0)) * Math.cos(Math.toRadians(90)));
@@ -84,6 +94,9 @@ public class Sphere extends Mesh {
         normals[vertexIndex] = x_temp;
         normals[vertexIndex + 1] = y_temp;
         normals[vertexIndex + 2] = z_temp;
+
+        textures[textureIndex] = 1.f;
+        textures[textureIndex + 1] = 1.f;
 
         // Triangles indexes
         int nbTriangles = (quarter * 2) + (((slice - 2) * quarter) * 2);

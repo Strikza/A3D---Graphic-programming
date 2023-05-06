@@ -18,29 +18,24 @@ import fr.univ_poitiers.dptinfo.algo3d.Vec3f;
  */
 public class Room {
 
+    static final String LOG_TAG = "Room";
+
     private float[] vertexpos;
     private float[] normals;
+    private float[] textures;
 
     private short[] triangles_floor;
     private short[] triangles_ceiling;
     private short[] triangles_wall;
-    private short[] edge_wall;
+
     private int glposbuffer_vertex;
     private int glposbuffer_normal;
+    private int gltexturebuffer;
     private int glelementbuffer_floor;
     private int glelementbuffer_ceiling;
     private int glelementbuffer_wall;
-    private int glelementbuffer_line;
 
     private float[] modelviewroom;
-
-    /**
-     * Declaration of the 4 buffers needed
-     */
-    protected ShortBuffer floorbufferS;
-    protected ShortBuffer ceilingbufferS;
-    protected ShortBuffer wallbufferS;
-    protected ShortBuffer linebufferS;
 
     /**
      * Constructor for a room
@@ -221,6 +216,69 @@ public class Room {
                 1.f, 0.f, 0.f
         };
 
+        textures = new float[]{
+                // Floor
+                1.f, 0.f,
+                0.f, 0.f,
+                0.f, 1.f,
+                1.f, 1.f,
+
+                // Ceilling
+                1.f, 0.f,
+                0.f, 0.f,
+                0.f, 1.f,
+                1.f, 1.f,
+
+                // Front wall
+                // Left quad
+                0.f, 1.f,
+                1.f/3.f, 1.f,
+                1.f/3.f, 0.5f/2.5f,
+                0.f, 0.5f/2.5f,
+
+                // Right quad
+                2.f/3.f, 1.f,
+                1.f, 1.f,
+                1.f, 0.5f/2.5f,
+                2.f/3.f, 0.5f/2.5f,
+
+                // High left quad
+                0.f, 0.5f/2.5f,
+                1.f/3.f, 0.5f/2.5f,
+                1.f/3.f, 0.f,
+                0.f, 0.f,
+
+                // High middle quad
+                1.f/3.f, 0.5f/2.5f,
+                2.f/3.f, 0.5f/2.5f,
+                2.f/3.f, 0.f,
+                1.f/3.f, 0.f,
+
+                // High right quad
+                2.f/3.f, 0.5f/2.5f,
+                1.f, 0.5f/2.5f,
+                1.f, 0.f,
+                2.f/3.f, 0.f,
+
+                // Right wall
+                0.f, 1.f,
+                1.f, 1.f,
+                1.f, 0.f,
+                0.f, 0.f,
+
+                // Back wall
+                0.f, 1.f,
+                1.f, 1.f,
+                1.f, 0.f,
+                0.f, 0.f,
+
+                // Left wall
+                0.f, 1.f,
+                1.f, 1.f,
+                1.f, 0.f,
+                0.f, 0.f,
+        };
+
         triangles_floor = new short[]{
                 0, 1, 2,
                 3, 0 ,2
@@ -265,53 +323,28 @@ public class Room {
                 36, 37, 38,
                 39, 36, 38
         };
-
-        edge_wall = new short[]{
-                // Front wall edges
-                8, 9,
-                9, 10,
-                10, 15,
-                15, 12,
-                12, 13,
-                13, 26,
-                26, 19,
-                19, 8,
-
-                // Right wall edges
-                28, 29,
-                29, 30,
-                30, 31,
-                31, 28,
-
-                // Back wall edges
-                32, 33,
-                33, 34,
-                34, 35,
-                35, 32,
-
-                // Left wall edges
-                36, 37,
-                37, 38,
-                38, 39,
-                39, 36
-        };
     }
 
-
     /**
-     * Send vertices to GPU's buffer
+     * Global function to send float buffers to GPU
+     * @param f_array : array where all indexes are stored
+     * @param glelementbuffer : buffer associated to f_array
      */
-    private void send_vertexes_to_GPU(){
-        ByteBuffer bytebuf = ByteBuffer.allocateDirect(vertexpos.length * Float.BYTES);
+    private void send_floatBuffer_to_GPU(float[] f_array, int glelementbuffer){
+
+        ByteBuffer bytebuf;
+        FloatBuffer fb;
+
+        bytebuf = ByteBuffer.allocateDirect(f_array.length * Float.BYTES);
         bytebuf.order(ByteOrder.nativeOrder());
-        FloatBuffer fb = bytebuf.asFloatBuffer();
-        fb.put(vertexpos);
+        fb = bytebuf.asFloatBuffer();
+        fb.put(f_array);
         fb.position(0);
 
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, glposbuffer_vertex);
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, glelementbuffer);
         GLES20.glBufferData(
                 GLES20.GL_ARRAY_BUFFER,
-                vertexpos.length * Float.BYTES,
+                f_array.length * Float.BYTES,
                 fb,
                 GLES20.GL_STATIC_DRAW
         );
@@ -319,31 +352,11 @@ public class Room {
     }
 
     /**
-     * Send normals to GPU's buffer
-     */
-    private void send_normals_to_GPU(){
-        ByteBuffer bytebuf = ByteBuffer.allocateDirect(normals.length * Float.BYTES);
-        bytebuf.order(ByteOrder.nativeOrder());
-        FloatBuffer fb = bytebuf.asFloatBuffer();
-        fb.put(normals);
-        fb.position(0);
-
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, glposbuffer_normal);
-        GLES20.glBufferData(
-                GLES20.GL_ARRAY_BUFFER,
-                normals.length * Float.BYTES,
-                fb,
-                GLES20.GL_STATIC_DRAW
-        );
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER,0);
-    }
-
-    /**
-     * Global function to send buffers to GPU
+     * Global function to send short buffers to GPU
      * @param s_array : array where all indexes are stored
-     * @param glelementbuffer : buffer associated to i_array
+     * @param glelementbuffer : buffer associated to f_array
      */
-    private void send_buffer_to_GPU(short[] s_array, int glelementbuffer){
+    private void send_shortBuffer_to_GPU(short[] s_array, int glelementbuffer){
 
         ByteBuffer bytebuf;
         ShortBuffer sb;
@@ -364,45 +377,37 @@ public class Room {
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER,0);
     }
 
-
     /**
      * Initializes all buffers witch be sent to the GPU
      */
-    public void initGraphics(LightingShaders shaders){
+    public void initGraphics(){
 
-        shaders.setNormalizing(true);
+        int[] buffers = new int[6];
+        GLES20.glGenBuffers(6, buffers, 0);
 
-        int[] buffers = new int[6]; // Besoin d’un buffer sur la carte graphique
-        GLES20.glGenBuffers(5, buffers, 0); // Allocations des buffers
+        // Vertex //
+        glposbuffer_vertex = buffers[0];
+        send_floatBuffer_to_GPU(vertexpos, glposbuffer_vertex);
 
-        glposbuffer_vertex =buffers[0];
-        send_vertexes_to_GPU();
+        // Normal //
+        glposbuffer_normal = buffers[1];
+        send_floatBuffer_to_GPU(normals, glposbuffer_normal);
 
-        glposbuffer_normal =buffers[1];
-        send_normals_to_GPU();
+        // Texture //
+        gltexturebuffer = buffers[2];
+        send_floatBuffer_to_GPU(textures, gltexturebuffer);
 
         // Floor //
-
-        glelementbuffer_floor =buffers[2];
-        send_buffer_to_GPU(triangles_floor,  glelementbuffer_floor);
-
+        glelementbuffer_floor = buffers[3];
+        send_shortBuffer_to_GPU(triangles_floor,  glelementbuffer_floor);
 
         // Ceiling //
-
-        glelementbuffer_ceiling =buffers[3];
-        send_buffer_to_GPU(triangles_ceiling, glelementbuffer_ceiling);
-
+        glelementbuffer_ceiling = buffers[4];
+        send_shortBuffer_to_GPU(triangles_ceiling, glelementbuffer_ceiling);
 
         // Wall //
-
-        glelementbuffer_wall =buffers[4];
-        send_buffer_to_GPU(triangles_wall, glelementbuffer_wall);
-
-
-        // Line //
-
-        glelementbuffer_line =buffers[5];
-        send_buffer_to_GPU(edge_wall, glelementbuffer_line);
+        glelementbuffer_wall = buffers[5];
+        send_shortBuffer_to_GPU(triangles_wall, glelementbuffer_wall);
     }
 
     /**
@@ -451,38 +456,64 @@ public class Room {
      * Draw the floor
      * @param shaders : Shader to represent the mesh
      */
-    private void drawFloor(final LightingShaders shaders)
+    private void drawFloor(final LightingShaders shaders, int floor_tex)
     {
         shaders.setModelViewMatrix(modelviewroom);
 
+        // Enable lending
+        GLES20.glEnable(GLES20.GL_BLEND);
+
+        // Vertex //
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, glposbuffer_vertex);
         shaders.setPositionsPointer(3,GLES20.GL_FLOAT);
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, glelementbuffer_floor);
 
+        // Normal //
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, glposbuffer_normal);
-        shaders.setNormalsPointer(3, GLES20.GL_FLOAT); // méthode définie dans LightingShaders
+        shaders.setNormalsPointer(3, GLES20.GL_FLOAT);
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, glelementbuffer_floor);
+
+        // Texture //
+        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA,GLES20.GL_ONE_MINUS_SRC_ALPHA);
+
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, gltexturebuffer);
+        shaders.setTexturesPointer(2, GLES20.GL_FLOAT);
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, floor_tex);
+        shaders.setTextureUnit(0);
 
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, triangles_floor.length, GLES20.GL_UNSIGNED_SHORT, 0);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER,0);
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER,0);
+
+        // Disable blending
+        GLES20.glDisable(GLES20.GL_BLEND);
     }
 
     /**
      * Draw the ceilling
      * @param shaders : Shader to represent the mesh
      */
-    private void drawCeiling(final LightingShaders shaders)
+    private void drawCeiling(final LightingShaders shaders, int ceiling_tex)
     {
         shaders.setModelViewMatrix(modelviewroom);
 
+        // Vertex //
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, glposbuffer_vertex);
         shaders.setPositionsPointer(3,GLES20.GL_FLOAT);
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, glelementbuffer_ceiling);
 
+        // Normal //
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, glposbuffer_normal);
-        shaders.setNormalsPointer(3, GLES20.GL_FLOAT); // méthode définie dans LightingShaders
+        shaders.setNormalsPointer(3, GLES20.GL_FLOAT);
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, glelementbuffer_ceiling);
+
+        // Texture //
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, gltexturebuffer);
+        shaders.setTexturesPointer(2, GLES20.GL_FLOAT);
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, ceiling_tex);
+        shaders.setTextureUnit(1);
 
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, triangles_ceiling.length, GLES20.GL_UNSIGNED_SHORT, 0);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER,0);
@@ -493,29 +524,29 @@ public class Room {
      * Draw the walls
      * @param shaders : Shader to represent the mesh
      */
-    private void drawWall(final LightingShaders shaders)
+    private void drawWall(final LightingShaders shaders, int wall_tex)
     {
         shaders.setModelViewMatrix(modelviewroom);
 
+        // Vertex //
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, glposbuffer_vertex);
         shaders.setPositionsPointer(3,GLES20.GL_FLOAT);
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, glelementbuffer_wall);
 
+        // Normal //
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, glposbuffer_normal);
-        shaders.setNormalsPointer(3, GLES20.GL_FLOAT); // méthode définie dans LightingShaders
+        shaders.setNormalsPointer(3, GLES20.GL_FLOAT);
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, glelementbuffer_wall);
 
-        GLES20.glPolygonOffset(2.F,4.F);
-        GLES20.glEnable(GLES20.GL_POLYGON_OFFSET_FILL);
+        // Vertex //
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, gltexturebuffer);
+        shaders.setTexturesPointer(2, GLES20.GL_FLOAT);
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE2);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, wall_tex);
+        shaders.setTextureUnit(2);
 
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, triangles_wall.length, GLES20.GL_UNSIGNED_SHORT, 0);
         GLES20.glDisable(GLES20.GL_POLYGON_OFFSET_FILL);
-
-//        shaders.setColor(MyGLRenderer.black);
-//        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, glelementbuffer_line);
-//        GLES20.glDrawElements(GLES20.GL_LINES, edge_wall.length,GLES20.GL_UNSIGNED_SHORT, 0);
-
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER,0);
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER,0);
     }
 
@@ -526,21 +557,32 @@ public class Room {
      * @param color_ceilling : the color of the ceilling
      * @param color_wall : color of the wall
      */
-    public void draw(final LightingShaders shaders, float[] color_floor, float[] color_ceilling, float[] color_wall){
+    public void draw(
+            final LightingShaders shaders,
+            float[] color_floor,
+            float[] color_ceilling,
+            float[] color_wall,
+            int floor_tex,
+            int ceiling_tex,
+            int wall_tex
+    ){
+        shaders.setNormalizing(true);
+        shaders.setLighting(true);
+        shaders.setTexturing(true);
 
         shaders.setMaterialColor(color_floor);
         shaders.setMaterialSpecular(MyGLRenderer.white);
         shaders.setMaterialShininess(100);
-        drawFloor(shaders);
+        drawFloor(shaders, floor_tex);
 
         shaders.setMaterialColor(color_ceilling);
         shaders.setMaterialSpecular(MyGLRenderer.white);
         shaders.setMaterialShininess(100);
-        drawCeiling(shaders);
+        drawCeiling(shaders, ceiling_tex);
 
         shaders.setMaterialColor(color_wall);
         shaders.setMaterialSpecular(MyGLRenderer.white);
         shaders.setMaterialShininess(100);
-        drawWall(shaders);
+        drawWall(shaders, wall_tex);
     }
 }

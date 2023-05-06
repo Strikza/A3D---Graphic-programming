@@ -6,31 +6,34 @@ uniform mat4 uModelViewMatrix;
 uniform mat4 uProjectionMatrix;
 uniform mat3 uNormalMatrix;
 
-// Light source definition
-uniform vec3 uLightPos;
-
 // Material definition
 uniform bool uNormalizing;
 
-// vertex attributes
+// Texture attributes
+uniform bool uTexturing;
+
+// Vertex attributes
 attribute vec3 aVertexPosition;
 attribute vec3 aVertexNormal;
+
+// Texture attributes
+attribute vec2 aTexCoord;
 
 // Interpolated data
 varying vec4 vPos;
 varying vec3 vNormal;
-varying vec3 h;
+varying vec2 vTexCoord;
 
 void main(void)
 {
     vPos = uModelViewMatrix * vec4(aVertexPosition, 1.0);
     vNormal = uNormalMatrix * aVertexNormal;
-    if (uNormalizing) vNormal = normalize(vNormal);
 
-    // Specular calcul before interpolated
-    vec3 lightdir = normalize(uLightPos - vPos.xyz);
-    vec3 v = normalize(-(vPos.xyz));
-    h = normalize(v + lightdir);
+    if (uTexturing){
+        vTexCoord = aTexCoord;
+    }
+
+    if (uNormalizing) vNormal = normalize(vNormal);
 
     gl_Position = uProjectionMatrix * vPos;
 }

@@ -29,15 +29,15 @@ public class Ball {
         radius = r;
         posx = x;
         posz = z;
-        s = new Sphere(SLICE, QUARTER);
+        s = new Sphere(SLICE, QUARTER, true);
     }
 
     /**
      * Initializes graphics by calling initGraphics from s
      */
-    public void initGraphics(LightingShaders shaders){
+    public void initGraphics() {
 
-        s.initGraphics(shaders);
+        s.initGraphics();
     }
 
     /**
@@ -52,13 +52,13 @@ public class Ball {
      * Draw the sphere by calling draw from s, after all transformations needed
      * @param shaders
      */
-    public void draw(final LightingShaders shaders) {
+    public void draw(final LightingShaders shaders, int texture) {
 
         s.translate(posx, radius, posz);
         // Whithout this, the sphere isn't well oriented
         s.rotate(90, 1.F, 0.F, 0.F);
         s.scale(radius, radius, radius);
-        s.draw(shaders);
+        s.draw(shaders, texture);
     }
 
     /**

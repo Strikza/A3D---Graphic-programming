@@ -18,25 +18,36 @@ uniform vec4 uMaterialColor;
 uniform vec4 uMaterialSpecular;
 uniform float uMaterialShininess;
 
+// Texture
+uniform bool uTexturing;
+uniform sampler2D uTextureUnit;
+
 // Interpolated data
 varying vec4 vPos;
 varying vec3 vNormal;
-varying vec3 h;
+varying vec2 vTexCoord;
 
 void main(void) {
 
     vec4 color;
+    vec4 color_tmp = uMaterialColor;
+
+    if (uTexturing) color_tmp *= texture2D(uTextureUnit, vTexCoord);
 
     if (uLighting) {
+
         // Lambert color
         vec3 lightdir = normalize(uLightPos-vPos.xyz);
         vec3 normal = normalize(vNormal);
         float weight = max(dot(normal, lightdir), 0.0);
-        vec4 colorLamb = uMaterialColor * (uAmbiantLight + weight * uLightColor);
+        vec4 colorLamb = color_tmp * (uAmbiantLight + weight * uLightColor);
 
         // Specular color
+        vec3 v = normalize(-(vPos.xyz));
+        vec3 h = normalize(v + lightdir);
+
         float specular = pow(
-                            max(dot(vNormal, normalize(h)), 0.0),
+                            max(dot(vNormal, h), 0.0),
                             uMaterialShininess
         );
         vec4 colorSpec = uLightSpecular * specular * uMaterialSpecular;
@@ -48,11 +59,11 @@ void main(void) {
                                 uConstantAttenuation +
                                 uLinearAttenuation * d +
                                 uQuadraticAttenuation * (d * d)
-        ) ;
+        );
         color *= attenuation;
     }
     else{
-        color = uMaterialColor;
+        color = color_tmp;
     }
 
     gl_FragColor = color;

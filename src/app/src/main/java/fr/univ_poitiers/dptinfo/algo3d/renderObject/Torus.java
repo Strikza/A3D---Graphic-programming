@@ -13,8 +13,8 @@ public class Torus extends Mesh {
      * @param R : major radius (distance from the centre of the torus to the centre of the tube)
      * @param r : minor radius (radius of the tube)
      */
-    public Torus(int slice, int quarter, float R, float r){
-        super(false);
+    public Torus(int slice, int quarter, float R, float r, boolean hasTexture){
+        super(hasTexture);
 
         slice = Math.max(slice, 3);
         quarter = Math.max(quarter, 3);
@@ -33,7 +33,9 @@ public class Torus extends Mesh {
         int nbVertices = (quarter+1) * (slice+1);
         vertexpos = new float[nbVertices * 3];
         normals = new float[nbVertices * 3];
+        textures = new float[nbVertices * 2];
         int vertexIndex = 0;
+        int textureIndex = 0;
 
         float x_temp;
         float y_temp;
@@ -57,7 +59,11 @@ public class Torus extends Mesh {
                 normals[vertexIndex + 1] = (float) ((r+1) * Math.sin(phiRad) - vertexpos[vertexIndex + 1]);
                 normals[vertexIndex + 2] = (float) ((R + (r+1) * Math.cos(phiRad)) * Math.sin(thetaRad) - vertexpos[vertexIndex + 2]);
 
+                textures[textureIndex] = (float) (thetaRad / (2 * Math.PI));
+                textures[textureIndex + 1] = (float) (phiRad / (2 * Math.PI));
+
                 vertexIndex += 3;
+                textureIndex += 2;
             }
         }
 

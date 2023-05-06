@@ -25,8 +25,8 @@ public class Icosphere extends Mesh{
      * Constructor for an icosphere
      * @param nbDiv : number of division to create the sphere
      */
-    public Icosphere(int nbDiv){
-        super(false);
+    public Icosphere(int nbDiv, boolean hasTexture){
+        super(hasTexture);
 
         middleKnown = new HashMap<>();
 
@@ -77,6 +77,18 @@ public class Icosphere extends Mesh{
             vertexpos = icoVertexpos;
             normals = icoVertexpos;
             triangles = icoTriangles;
+        }
+
+        textures = new float[vertexpos.length * 2/3];
+
+        int textureIndex = 0;
+        for(int i = 0; i < vertexpos.length; i += 3){
+
+            double phi = Math.atan2(vertexpos[i + 1], vertexpos[i]);
+            double theta = Math.asin(vertexpos[i + 2]);
+
+            textures[textureIndex++] = (float) (phi / (2 * Math.PI));
+            textures[textureIndex++] = (float) (theta / Math.PI + 0.5);
         }
     }
 

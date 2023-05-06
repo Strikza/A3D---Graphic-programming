@@ -3,6 +3,7 @@ package fr.univ_poitiers.dptinfo.algo3d.renderObject;
 import android.content.Context;
 import android.util.Log;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -16,16 +17,15 @@ public class LoaderOBJ extends Mesh{
 
     static final String LOG_TAG = "LoaderOBJ";
 
-    private float[] vertextexture;
-    private int[] textures;
+    private int[] f_textures;
 
     /**
      * Constructor of an obj mesh
      * @param context : context of the application (needed to find obj files)
      * @param fileName : name of the obj file
      */
-    public LoaderOBJ(Context context, String fileName){
-        super(false);
+    public LoaderOBJ(Context context, String fileName, boolean hasTexture){
+        super(hasTexture);
 
         try {
             InputStream ipst = context.getResources().getAssets().open(fileName);
@@ -52,7 +52,7 @@ public class LoaderOBJ extends Mesh{
             int last_normal;
             StringBuilder tmp = new StringBuilder();
             List<Float> tmpVertexpos = new ArrayList<>();
-            List<Float> tmpVertextexture = new ArrayList<>();
+            List<Float> tmpCoortexture = new ArrayList<>();
             List<Float> tmpVertexnormal = new ArrayList<>();
             List<Integer> tmpTriangles = new ArrayList<>();
             List<Integer> tmpTextures = new ArrayList<>();
@@ -71,7 +71,7 @@ public class LoaderOBJ extends Mesh{
 
                             case 't':
                                 Log.d(LOG_TAG, "Texture line found");
-                                current_vertexes = tmpVertextexture;
+                                current_vertexes = tmpCoortexture;
                                 data = ipst.read();
                                 break;
                             case 'n':
@@ -229,14 +229,14 @@ public class LoaderOBJ extends Mesh{
                 vertexpos[i] = tmpVertexpos.get(i);
             }
 
-            // Initialization of vextextexture
-            vertextexture = new float[tmpVertextexture.size()];
-            for(int i = 0; i<tmpVertextexture.size(); i++){
+            // Initialization of textures
+            textures = new float[tmpCoortexture.size()];
+            for(int i = 0; i<tmpCoortexture.size(); i++){
 
-                vertextexture[i] = tmpVertextexture.get(i);
+                textures[i] = tmpCoortexture.get(i);
             }
 
-            // Initialization of vextexnormal
+            // Initialization of normal
             normals = new float[tmpVertexnormal.size()];
             for(int i = 0; i<tmpVertexnormal.size(); i++){
 
@@ -248,13 +248,6 @@ public class LoaderOBJ extends Mesh{
             for(int i = 0; i<tmpTriangles.size(); i++){
 
                 triangles[i] =  tmpTriangles.get(i) - 1;
-            }
-
-            // Initialization of textures
-            textures = new int[tmpTextures.size()];
-            for(int i = 0; i<tmpTextures.size(); i++){
-
-                textures[i] = tmpTextures.get(i) - 1;
             }
 
             Log.d(LOG_TAG, "Load finished");

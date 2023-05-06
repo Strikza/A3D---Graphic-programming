@@ -74,6 +74,19 @@ public abstract class LightingShaders extends BasicShaders
      * GLSL uniform Shininess of the material (for specular component)
      */
     protected int uMaterialShininess;
+    // =================================
+    // Uniform variable for unit texture
+    // =================================
+    /**
+     * GLSL uniform boolean to add texture on the object (or not)
+     */
+    protected int uTexturing;
+
+    /**
+     * GLSL uniform unit texture
+     */
+    protected int uTextureUnit;
+
     // ================================
     // Attributes to manage GLES arrays
     // ================================
@@ -81,6 +94,11 @@ public abstract class LightingShaders extends BasicShaders
      * GLSL attribute for vertex normal arrays
      */
     protected int aVertexNormal;
+
+    /**
+     * GLSL attribute for texture coordinate
+     */
+    protected int aTexCoord;
 
 
     /**
@@ -139,10 +157,22 @@ public abstract class LightingShaders extends BasicShaders
         this.uMaterialShininess = GLES20.glGetUniformLocation(this.shaderprogram, "uMaterialShininess");
         if (this.uMaterialShininess==-1) MainActivity.log("Warning: uMaterialShininess not found in shaders");
 
+        // Variable for texture
+        this.uTexturing = GLES20.glGetUniformLocation(this.shaderprogram, "uTexturing");
+        if (this.uTexturing==-1) MainActivity.log("Warning: uTexturing not found in shaders");
+
+        this.uTextureUnit = GLES20.glGetUniformLocation(this.shaderprogram, "uTextureUnit");
+        if (this.uTextureUnit==-1) MainActivity.log("Warning: uTextureUnit not found in shaders");
+
         // vertex attributes
         this.aVertexNormal = GLES20.glGetAttribLocation(this.shaderprogram, "aVertexNormal");
         if (this.aVertexNormal==-1) throw new RuntimeException("aVertexNormal not found in shaders");
         GLES20.glEnableVertexAttribArray(this.aVertexNormal);
+
+        // Texture attributes
+        this.aTexCoord = GLES20.glGetAttribLocation(this.shaderprogram, "aTexCoord");
+        if (this.aTexCoord==-1) throw new RuntimeException("aTexCoord not found in shaders");
+        GLES20.glEnableVertexAttribArray(this.aTexCoord);
     }
 
     /**
@@ -288,6 +318,28 @@ public abstract class LightingShaders extends BasicShaders
         GLES20.glUniform1f(this.uMaterialShininess,shininess);
     }
 
+    // ==================
+    // Texutres functions
+    // ==================
+    /**
+     * Set texturing
+     * @param state on/off
+     */
+    public void setTexturing(final boolean state)
+    {
+        if (this.uTexturing!=-1)
+            GLES20.glUniform1i(this.uTexturing, state?1:0);
+    }
+
+    /**
+     * Set the object unit texture
+     * @param textureUnit Unit texture
+     */
+    public void setTextureUnit(final int textureUnit)
+    {
+        GLES20.glUniform1i(this.uTextureUnit, textureUnit);
+    }
+
     // ===================
     // Attributes handling
     // ===================
@@ -301,5 +353,13 @@ public abstract class LightingShaders extends BasicShaders
         GLES20.glVertexAttribPointer(this.aVertexNormal, size, dtype, false, 0, 0);
     }
 
-
+    /**
+     * Set texture array for future drawings
+     * @param size number of coordinates by textures
+     * @param dtype type of coordinates
+     */
+    public void setTexturesPointer(int size, int dtype)
+    {
+        GLES20.glVertexAttribPointer(this.aTexCoord, size, dtype, false, 0, 0);
+    }
 }
