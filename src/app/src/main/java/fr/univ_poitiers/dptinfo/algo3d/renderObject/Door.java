@@ -3,11 +3,9 @@ package fr.univ_poitiers.dptinfo.algo3d.renderObject;
 public class Door extends Mesh{
     /**
      * Constructor for a door
-     *
-     * @param hasTexture : Specifies whether the mesh has its own textures to be drawn, or not
      */
-    public Door(boolean hasTexture) {
-        super(hasTexture);
+    public Door() {
+        super();
 
         vertexpos = new float[]{
 

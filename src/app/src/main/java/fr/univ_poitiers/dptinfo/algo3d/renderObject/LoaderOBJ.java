@@ -24,8 +24,8 @@ public class LoaderOBJ extends Mesh{
      * @param context : context of the application (needed to find obj files)
      * @param fileName : name of the obj file
      */
-    public LoaderOBJ(Context context, String fileName, boolean hasTexture){
-        super(hasTexture);
+    public LoaderOBJ(Context context, String fileName){
+        super();
 
         try {
             InputStream ipst = context.getResources().getAssets().open(fileName);

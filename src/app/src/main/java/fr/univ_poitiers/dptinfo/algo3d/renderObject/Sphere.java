@@ -11,8 +11,8 @@ public class Sphere extends Mesh {
      * @param slice : number of slices
      * @param quarter : number of quarters
      */
-    Sphere(int slice, int quarter, boolean hasTexture) {
-        super(hasTexture);
+    Sphere(int slice, int quarter) {
+        super();
 
         float phi = 360 / (float) quarter;
         float theta = 180 / (float) slice;

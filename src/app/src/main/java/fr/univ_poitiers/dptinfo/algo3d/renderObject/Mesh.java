@@ -8,7 +8,6 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import fr.univ_poitiers.dptinfo.algo3d.Scene;
 import fr.univ_poitiers.dptinfo.algo3d.shaders.LightingShaders;
 
 /**
@@ -29,17 +28,13 @@ public class Mesh {
     private int glposbuffer_normal;
     private int gltexturebuffer;
 
-    private boolean hasTexture;
-
     private float[] modelview;
 
     /**
      * Constructor for a mesh
-     * @param hasTexture : Specifies whether the mesh has its own textures to be drawn, or not
      */
-    public Mesh(boolean hasTexture){
+    public Mesh(){
 
-        this.hasTexture = hasTexture;
         modelview = new float[16];
     }
 
@@ -103,21 +98,12 @@ public class Mesh {
 
         int[] buffers;
 
-        if(!hasTexture){
+        buffers = new int[4];
+        GLES20.glGenBuffers(4, buffers, 0);
 
-            buffers = new int[3];
-            GLES20.glGenBuffers(3, buffers, 0);
-
-        }
-        else {
-
-            buffers = new int[4];
-            GLES20.glGenBuffers(4, buffers, 0);
-
-            // Texture //
-            gltexturebuffer = buffers[3];
-            send_floatBuffer_to_GPU(textures, gltexturebuffer);
-        }
+        // Texture //
+        gltexturebuffer = buffers[3];
+        send_floatBuffer_to_GPU(textures, gltexturebuffer);
 
         // Vertex //
         glposbuffer_vertex = buffers[0];
@@ -177,37 +163,6 @@ public class Mesh {
     /**
      * Draw the current mesh
      * @param shaders : Shader to represent the mesh
-     */
-    public void draw(final LightingShaders shaders){
-
-        shaders.setModelViewMatrix(modelview);
-        shaders.setNormalizing(true);
-        shaders.setLighting(true);
-        shaders.setTexturing(false);
-
-        // Vertex //
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, glposbuffer_vertex);
-        shaders.setPositionsPointer(3,GLES20.GL_FLOAT);
-        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, glelementbuffer);
-
-        // Normal //
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, glposbuffer_normal);
-        shaders.setNormalsPointer(3, GLES20.GL_FLOAT);
-        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, glelementbuffer);
-
-        GLES20.glPolygonOffset(2.F,4.F);
-        GLES20.glEnable(GLES20.GL_POLYGON_OFFSET_FILL);
-
-        GLES20.glDrawElements(GLES20.GL_TRIANGLES, triangles.length, GLES20.GL_UNSIGNED_INT, 0);
-        GLES20.glDisable(GLES20.GL_POLYGON_OFFSET_FILL);
-
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER,0);
-        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER,0);
-    }
-
-    /**
-     * Draw the current mesh
-     * @param shaders : Shader to represent the mesh
      * @param texture : id of the texture to draw
      */
     public void draw(final LightingShaders shaders, int texture){
@@ -242,5 +197,6 @@ public class Mesh {
 
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER,0);
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER,0);
+
     }
 }

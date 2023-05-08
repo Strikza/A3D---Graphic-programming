@@ -28,7 +28,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer
     static public final float[] black={0.0F,0.0F,0.0F,1.F};
     static public final float[] white={1.0F,1.0F,1.0F,1.F};
     static public final float[] white_alpha={1.0F,1.0F,1.0F,0.5F};
-    static public final float[] white_glass={1.0F,1.0F,1.0F,0.1F};
+    static public final float[] glass={0.2F,0.2F,0.2F,0.25F};
     static public final float[] gray={0.5F,0.5F,0.5F,1.F};
     static public final float[] lightgray={0.8F,0.8F,0.8F,1.F};
     static public final float[] darkgray={0.2F,0.2F,0.2F,1.F};

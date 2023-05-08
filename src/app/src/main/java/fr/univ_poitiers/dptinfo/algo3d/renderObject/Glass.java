@@ -28,8 +28,6 @@ public class Glass {
     private int glposbuffer_normal;
     private int gltexturebuffer;
 
-    private int texture;
-
     private float[] modelview;
 
     /**
@@ -64,6 +62,7 @@ public class Glass {
         };
 
         triangles = new int[] {
+
                 0, 1, 2,
                 0, 2, 3
         };
@@ -71,7 +70,6 @@ public class Glass {
 
     /**
      * Global function to send float buffers to GPU
-     *
      * @param f_array         : array where all indexes are stored
      * @param glelementbuffer : buffer associated to f_array
      */
@@ -98,7 +96,6 @@ public class Glass {
 
     /**
      * Global function to send buffers to GPU
-     *
      * @param i_array         : array where all indexes are stored
      * @param glelementbuffer : buffer associated to i_array
      */
@@ -126,9 +123,7 @@ public class Glass {
     /**
      * Initializes all buffers witch be sent to the GPU
      */
-    public void initGraphics(int texture) {
-
-        this.texture = texture;
+    public void initGraphics() {
 
         int[] buffers;
 
@@ -144,17 +139,16 @@ public class Glass {
         send_floatBuffer_to_GPU(normals, glposbuffer_normal);
 
         // Texture //
-        gltexturebuffer = buffers[3];
+        gltexturebuffer = buffers[2];
         send_floatBuffer_to_GPU(textures, gltexturebuffer);
 
         // Triangle //
-        glelementbuffer = buffers[2];
+        glelementbuffer = buffers[3];
         send_shortBuffer_to_GPU(triangles, glelementbuffer);
     }
 
     /**
      * Set the current modelview of the mesh with another modelview
-     *
      * @param modelviewmatrix : the modelview that will be copied
      */
     public void setModelView(final float[] modelviewmatrix) {
@@ -164,7 +158,6 @@ public class Glass {
 
     /**
      * Transformation of the mesh by a translation of the modelview
-     *
      * @param x : translation of the position on x
      * @param y : translation of the position on y
      * @param z : translation of the position on z
@@ -176,7 +169,6 @@ public class Glass {
 
     /**
      * Transformation of the mesh by a rotation of the modelview
-     *
      * @param x : rotation of the mesh on x
      * @param y : rotation of the mesh on y
      * @param z : rotation of the mesh on z
@@ -188,7 +180,6 @@ public class Glass {
 
     /**
      * Transformation of the mesh by a scale of the modelview
-     *
      * @param x : scale of all vertices on x
      * @param y : scale of all vertices on y
      * @param z : scale of all vertices on z
@@ -200,17 +191,17 @@ public class Glass {
 
     /**
      * Draw the current mesh
-     *
      * @param shaders : Shader to represent the mesh
+     * @param texture : id of the texture to draw
      */
-    public void draw(final LightingShaders shaders) {
+    public void draw(final LightingShaders shaders, int texture) {
 
         shaders.setModelViewMatrix(modelview);
         shaders.setNormalizing(true);
         shaders.setLighting(true);
         shaders.setTexturing(true);
 
-        // Enable lending
+        // Enable blending
         GLES20.glEnable(GLES20.GL_BLEND);
 
         // Vertex //

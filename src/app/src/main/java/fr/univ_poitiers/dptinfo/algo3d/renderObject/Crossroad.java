@@ -43,7 +43,7 @@ public class Crossroad {
 
         modelviewroom=new float[16];
 
-        door = new Door(true);
+        door = new Door();
 
         vertexpos = new float[]{
                 // Floor //
@@ -88,11 +88,13 @@ public class Crossroad {
         };
 
         triangles_floor = new short[]{
+
                 0, 1, 2,
                 3, 0 ,2
         };
 
         triangles_ceiling = new short[]{
+
                 4, 7, 6,
                 4, 6, 5
         };
@@ -227,6 +229,7 @@ public class Crossroad {
     /**
      * Draw the floor
      * @param shaders : Shader to represent the mesh
+     * @param floor_tex : id of the floor texture to draw
      */
     private void drawFloor(final LightingShaders shaders, int floor_tex)
     {
@@ -265,6 +268,7 @@ public class Crossroad {
     /**
      * Draw the ceilling
      * @param shaders : Shader to represent the mesh
+     * @param  ceiling_tex : id of the ceiling texture to draw
      */
     private void drawCeiling(final LightingShaders shaders, int ceiling_tex)
     {
@@ -295,36 +299,40 @@ public class Crossroad {
     /**
      * Draw the doors
      * @param shaders : Shader to represent the mesh
+     * @param door_tex : id of the door texture to draw
      */
     private void drawDoors(final LightingShaders shaders, int door_tex)
     {
         door.translate(0.f,0.f, -3.f);
-        door.draw(shaders);
+        door.draw(shaders, door_tex);
 
         door.rotate(-90.f, 0.f, 1.f, 0.f);
         door.translate(3.f,0.f, -3.f);
-        door.draw(shaders);
+        door.draw(shaders, door_tex);
 
         door.rotate(180.f, 0.f, 1.f, 0.f);
         door.translate(0.f,0.f, -6.f);
-        door.draw(shaders);
+        door.draw(shaders, door_tex);
 
         door.rotate(90.f, 0.f, 1.f, 0.f);
         door.translate(-3.f,0.f, -3.f);
-        door.draw(shaders);
+        door.draw(shaders, door_tex);
     }
 
     /**
      * Draw the room
      * @param shaders : Shader to represent the mesh
      * @param color_floor : the color of the floor
-     * @param color_ceilling : the color of the ceilling
+     * @param color_ceiling : the color of the ceilling
      * @param color_door : color of the wall
+     * @param floor_tex :id of the floor texture to draw
+     * @param ceiling_tex : id of the ceiling texture to draw
+     * @param door_tex : id of the door texture to draw
      */
     public void draw(
             final LightingShaders shaders,
             float[] color_floor,
-            float[] color_ceilling,
+            float[] color_ceiling,
             float[] color_door,
             int floor_tex,
             int ceiling_tex,
@@ -341,7 +349,7 @@ public class Crossroad {
         shaders.setMaterialShininess(100);
         drawFloor(shaders, floor_tex);
 
-        shaders.setMaterialColor(color_ceilling);
+        shaders.setMaterialColor(color_ceiling);
         shaders.setMaterialSpecular(MyGLRenderer.white);
         shaders.setMaterialShininess(100);
         drawCeiling(shaders, ceiling_tex);

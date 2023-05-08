@@ -25,8 +25,8 @@ public class Icosphere extends Mesh{
      * Constructor for an icosphere
      * @param nbDiv : number of division to create the sphere
      */
-    public Icosphere(int nbDiv, boolean hasTexture){
-        super(hasTexture);
+    public Icosphere(int nbDiv){
+        super();
 
         middleKnown = new HashMap<>();
 

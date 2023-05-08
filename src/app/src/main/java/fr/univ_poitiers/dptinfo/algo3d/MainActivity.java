@@ -70,29 +70,6 @@ public class MainActivity extends Activity
         reset.setText(R.string.reset_text);
         reset.setOnClickListener(view->scene.reset_pos());
         this.addContentView(reset, new AbsListView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        TextView label = new TextView(this);
-        label.setX(20);
-        label.setY(20);
-        label.setTextSize(20);
-        label.setText("Activate hitbox");
-        label.setTextColor(0xffffffff);
-        label.setBackgroundColor(0x8c8c8c8c);
-        this.addContentView(label, new AbsListView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        Switch hitboxes = new Switch(this);
-        hitboxes.setX(20);
-        hitboxes.setY(80);
-        hitboxes.setChecked(false);
-        hitboxes.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
-        {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                scene.isHitboxesAreActivated = isChecked;
-            }
-        });
-        this.addContentView(hitboxes, new AbsListView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
     }
 
     /**

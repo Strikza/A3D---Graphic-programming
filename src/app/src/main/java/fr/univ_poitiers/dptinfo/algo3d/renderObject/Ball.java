@@ -29,7 +29,7 @@ public class Ball {
         radius = r;
         posx = x;
         posz = z;
-        s = new Sphere(SLICE, QUARTER, true);
+        s = new Sphere(SLICE, QUARTER);
     }
 
     /**
@@ -50,7 +50,8 @@ public class Ball {
 
     /**
      * Draw the sphere by calling draw from s, after all transformations needed
-     * @param shaders
+     * @param shaders : Shader to represent the mesh
+     * @param texture : id of the texture to draw
      */
     public void draw(final LightingShaders shaders, int texture) {
 
@@ -62,7 +63,7 @@ public class Ball {
     }
 
     /**
-     * Static function to change the number of slice s will have
+     * Static function to change the number of slices will have
      * @param slice : new number of slices
      */
     public static void setSLICE(int slice){
@@ -70,7 +71,7 @@ public class Ball {
     }
 
     /**
-     * Static function to change the number of quarter s will have
+     * Static function to change the number of quarters will have
      * @param quarter : new number of quarters
      */
     public static void setQUARTER(int quarter){

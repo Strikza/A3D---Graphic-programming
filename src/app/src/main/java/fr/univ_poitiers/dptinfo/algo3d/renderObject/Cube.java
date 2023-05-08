@@ -1,7 +1,7 @@
 package fr.univ_poitiers.dptinfo.algo3d.renderObject;
 
 /**
- * Class to represent a square
+ * Class to represent a cube
  * @author Samuel Goubeau
  */
 public class Cube extends Mesh {
@@ -9,10 +9,10 @@ public class Cube extends Mesh {
     static final String LOG_TAG = "Cube";
 
     /**
-     * Constructor for a square
+     * Constructor for a cube
      */
-    public Cube(boolean hasTexture){
-        super(hasTexture);
+    public Cube(){
+        super();
 
         vertexpos = new float[]{
 

@@ -30,14 +30,10 @@ public class Scene
     Context context;
 
     /**
-     * to activate detection of hit boxes
-     */
-    boolean isHitboxesAreActivated;
-
-    /**
      * An angle used to animate the viewer
      */
     float anglex,angley;
+    float dynamic_angle;
 
     /**
      * Current observer's position
@@ -65,7 +61,6 @@ public class Scene
      */
     LoaderOBJ drk_sword;
     LoaderOBJ drk_sword_lux;
-    LoaderOBJ cow;
     LoaderOBJ toy_chest;
     LoaderOBJ turtle;
     LoaderOBJ pig;
@@ -88,8 +83,11 @@ public class Scene
      * Torus object
      */
     Torus torus_ring;
-    Torus torus_horn;
-    Torus torus_self_intersecting_spindle;
+
+    /**
+     * Glass object
+     */
+    Glass glass;
 
     /**
      * Shader
@@ -99,16 +97,29 @@ public class Scene
     /**
      * Loaded textures
      */
+    private int autumn_leaf_tex;
     private int basketball_tex;
+    private int beach_tex;
     private int beachball_tex;
+    private int buoy_tex;
     private int ceiling_tex;
+    private int default_tex;
     private int donut_tex;
     private int drk_sword_tex;
+    private int earth_tex;
     private int eden_tex;
+    private int forest_tex;
+    private int jupiter_tex;
+    private  int marble1_tex;
     private  int marble2_tex;
     private  int pig_tex;
+    private  int ruin_tex;
     private  int rust_tex;
+    private  int sky_tex;
+    private  int sky_above_tex;
+    private  int space_tex;
     private  int stone_tex;
+    private  int tiles1_tex;
     private  int toy_chest_tex;
     private  int turtle_tex;
     private  int wall_tex;
@@ -125,12 +136,10 @@ public class Scene
 
         context = c;
 
-        isHitboxesAreActivated = false;
-
         // Init observer's view angles
         angley = 0.F;
         anglex = 0.F;
-
+        dynamic_angle = 0.F;
         // Init observer's position
         posx = 0.F;
         posz = 0.F;
@@ -142,23 +151,21 @@ public class Scene
         // Construct objects
         room = new Room();
         crossroad = new Crossroad();
-        ball1 = new Ball(1.F, 1.8F, -1.8F);
-        ball2 = new Ball(0.5F, 1.8F, 0.F);
-        drk_sword = new LoaderOBJ(context, "drk_sword.obj", true);
-        drk_sword_lux = new LoaderOBJ(context, "drk_sword_lux.obj", true);
-        cow = new LoaderOBJ(context, "cow.obj", false);
-        toy_chest = new LoaderOBJ(context, "toy_chest.obj", true);
-        turtle = new LoaderOBJ(context, "turtle.obj", true);
-        pig = new LoaderOBJ(context, "pig.obj", true);
-        eden = new LoaderOBJ(context, "eden.obj", true);
-        support = new Cube(true);
-        cube = new Cube(true);
-        icosphere_div0 = new Icosphere(0, false);
-        icosphere_div2 = new Icosphere(2, true);
-        icosphere_div4 = new Icosphere(4, true);
-        torus_ring = new Torus(49, 49,2.F, 1.F, true);
-        torus_horn = new Torus(49, 49,1.F, 1.F, true);
-        torus_self_intersecting_spindle = new Torus(49, 49,1.F, 2.F, true);
+        ball1 = new Ball(0.5F, 8.F, 0.F);
+        ball2 = new Ball(0.3F, 6.5F, 1.8F);
+        drk_sword = new LoaderOBJ(context, "drk_sword.obj");
+        drk_sword_lux = new LoaderOBJ(context, "drk_sword_lux.obj");
+        toy_chest = new LoaderOBJ(context, "toy_chest.obj");
+        turtle = new LoaderOBJ(context, "turtle.obj");
+        pig = new LoaderOBJ(context, "pig.obj");
+        eden = new LoaderOBJ(context, "eden.obj");
+        support = new Cube();
+        cube = new Cube();
+        icosphere_div0 = new Icosphere(0);
+        icosphere_div2 = new Icosphere(2);
+        icosphere_div4 = new Icosphere(4);
+        torus_ring = new Torus(49, 49,2.F, 1.F);
+        glass = new Glass();
     }
 
 
@@ -169,7 +176,7 @@ public class Scene
     public void initGraphics(MyGLRenderer renderer){
         // Initialize all specificities of current shaders
         shaders = (BlinnPhongShaders) renderer.getShaders();
-        shaders.setAmbiantLight(MyGLRenderer.darkgray);
+        shaders.setAmbiantLight(MyGLRenderer.gray);
         shaders.setLightColor(MyGLRenderer.lightgray);
         shaders.setLightSpecular(SPECULAR_LIGHT);
         shaders.setLightAttenuation(.5f, .1f, .1f);
@@ -177,16 +184,29 @@ public class Scene
         shaders.setLighting(true);
 
         // Load all textures
+        autumn_leaf_tex = MyGLRenderer.loadTexture(context, R.drawable.autumn_leaf);
         basketball_tex = MyGLRenderer.loadTexture(context, R.drawable.basketball);
+        beach_tex = MyGLRenderer.loadTexture(context, R.drawable.beach);
         beachball_tex = MyGLRenderer.loadTexture(context, R.drawable.beachball);
+        buoy_tex = MyGLRenderer.loadTexture(context, R.drawable.buoy);
         ceiling_tex = MyGLRenderer.loadTexture(context, R.drawable.ceiling);
+        default_tex = MyGLRenderer.loadTexture(context, R.drawable.default_texture);
         donut_tex = MyGLRenderer.loadTexture(context, R.drawable.donut);
         drk_sword_tex = MyGLRenderer.loadTexture(context, R.drawable.drk_sword);
+        earth_tex = MyGLRenderer.loadTexture(context, R.drawable.earth);
         eden_tex = MyGLRenderer.loadTexture(context, R.drawable.eden);
+        forest_tex = MyGLRenderer.loadTexture(context, R.drawable.forest);
+        jupiter_tex = MyGLRenderer.loadTexture(context, R.drawable.jupiter);
+        marble1_tex = MyGLRenderer.loadTexture(context, R.drawable.marble1);
         marble2_tex = MyGLRenderer.loadTexture(context, R.drawable.marble2);
         pig_tex = MyGLRenderer.loadTexture(context, R.drawable.pig);
+        ruin_tex = MyGLRenderer.loadTexture(context, R.drawable.ruin);
         rust_tex = MyGLRenderer.loadTexture(context, R.drawable.rust);
+        sky_tex = MyGLRenderer.loadTexture(context, R.drawable.sky);
+        sky_above_tex = MyGLRenderer.loadTexture(context, R.drawable.sky_above);
+        space_tex = MyGLRenderer.loadTexture(context, R.drawable.space);
         stone_tex = MyGLRenderer.loadTexture(context, R.drawable.stone);
+        tiles1_tex = MyGLRenderer.loadTexture(context, R.drawable.tiles1);
         toy_chest_tex = MyGLRenderer.loadTexture(context, R.drawable.toy_chest);
         turtle_tex = MyGLRenderer.loadTexture(context, R.drawable.turtle);
         wall_tex = MyGLRenderer.loadTexture(context, R.drawable.wall);
@@ -198,7 +218,6 @@ public class Scene
         ball2.initGraphics();
         drk_sword.initGraphics();
         drk_sword_lux.initGraphics();
-        cow.initGraphics();
         toy_chest.initGraphics();
         turtle.initGraphics();
         pig.initGraphics();
@@ -209,12 +228,11 @@ public class Scene
         icosphere_div2.initGraphics();
         icosphere_div4.initGraphics();
         torus_ring.initGraphics();
-        torus_horn.initGraphics();
-        torus_self_intersecting_spindle.initGraphics();
+        glass.initGraphics();
 
         MainActivity.log("Initializing graphics");
         // Set the background frame color
-        GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        GLES20.glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         // Allow back face culling !!
         GLES20.glEnable(GLES20.GL_CULL_FACE);
 
@@ -224,7 +242,9 @@ public class Scene
         MainActivity.log("Graphics initialized");
     }
 
-    public void step() {}
+    public void step() {
+        dynamic_angle = (dynamic_angle + 0.5f) % 360.f;
+    }
 
 
     /**
@@ -278,11 +298,11 @@ public class Scene
 
         // Set ModelView for objects
         room.setModelView(modelviewmatrix);
+        crossroad.setModelView(modelviewmatrix);
         ball1.setModelView(modelviewmatrix);
         ball2.setModelView(modelviewmatrix);
         drk_sword.setModelView(modelviewmatrix);
         drk_sword_lux.setModelView(modelviewmatrix);
-        cow.setModelView(modelviewmatrix);
         toy_chest.setModelView(modelviewmatrix);
         turtle.setModelView(modelviewmatrix);
         pig.setModelView(modelviewmatrix);
@@ -293,176 +313,339 @@ public class Scene
         icosphere_div2.setModelView(modelviewmatrix);
         icosphere_div4.setModelView(modelviewmatrix);
         torus_ring.setModelView(modelviewmatrix);
-        torus_horn.setModelView(modelviewmatrix);
-        torus_self_intersecting_spindle.setModelView(modelviewmatrix);
-        crossroad.setModelView(modelviewmatrix);
+        glass.setModelView(modelviewmatrix);
 
-
-        // 1st room
-        room.draw(
-                shaders,
-                MyGLRenderer.white_alpha,
-                MyGLRenderer.lightgray,
-                MyGLRenderer.magenta,
-                marble2_tex,
-                ceiling_tex,
-                wall_tex
-        );
-
-        // 2nd room
-        room.translate(0.F,0.F,-6.F);
-        room.rotate(180.F,0.0F,1.0F,0.0F);
-
-        room.draw(
+        // Crossroad //
+        crossroad.draw(
                 shaders,
                 MyGLRenderer.white_alpha,
                 MyGLRenderer.lightgray,
                 MyGLRenderer.yellow,
-                marble2_tex,
+                marble1_tex,
                 ceiling_tex,
                 wall_tex
         );
 
 
-        // Balls
+        // Room 1 - Nature //
+        room.translate(0.f,0.f, 6.f);
+
+        room.draw(
+                shaders,
+                MyGLRenderer.white_alpha,
+                MyGLRenderer.lightgray,
+                MyGLRenderer.lightgray,
+                autumn_leaf_tex,
+                sky_above_tex,
+                forest_tex
+        );
+
+        shaders.setMaterialColor(MyGLRenderer.lightgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
+        pig.translate(-1.2f, 0.75f, 8.f);
+        pig.rotate(90.f, 0.f, 1.f, 0.f);
+        pig.draw(shaders, pig_tex);
+
+        shaders.setMaterialColor(MyGLRenderer.lightgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
+        pig.translate(0.5f, -0.45f, -0.5f);
+        pig.rotate(45.f, 0.f, 1.f, 0.f);
+        pig.draw(shaders, pig_tex);
+
+        shaders.setMaterialColor(MyGLRenderer.lightgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
+        pig.translate(0.5f, 0.35f, -0.5f);
+        pig.rotate(45.f, 0.f, 1.f, 0.f);
+        pig.draw(shaders, pig_tex);
+
+        shaders.setMaterialColor(MyGLRenderer.lightgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
+        pig.translate(-0.5f, 0.25f, -0.8f);
+        pig.rotate(-45.f, 0.f, 1.f, 0.f);
+        pig.scale(3.f, 3.f, 3.f);
+        pig.draw(shaders, pig_tex);
+
+        shaders.setMaterialColor(MyGLRenderer.lightgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
+        turtle.translate(1.2f, 0.f, 7.5f);
+        turtle.rotate(-120.f, 0.f, 1.f, 0.f);
+        turtle.scale(4.5f, 4.5f, 4.5f);
+        turtle.draw(shaders, turtle_tex);
+
+        shaders.setMaterialColor(MyGLRenderer.darkgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(1000);
+        support.translate(-3.f, 0.f, 6.f);
+        support.scale(6.f, 0.2f, 0.2f);
+        support.draw(shaders, stone_tex);
+
+        shaders.setMaterialColor(MyGLRenderer.glass);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(10000);
+        glass.translate(3.f, 0.f, 5.9f);
+        glass.rotate(180, 0.f, 1.f, 0.f);
+        glass.scale(6.f, 3.f, 1.f);
+        glass.draw(shaders, marble2_tex);
+
+
+        // Room 2 - Space //
+        room.rotate(180, 0.f,1.f,0.f);
+        room.translate(0.f,0.f, 12.f);
+
+        room.draw(
+                shaders,
+                MyGLRenderer.white_alpha,
+                MyGLRenderer.white,
+                MyGLRenderer.white,
+                stone_tex,
+                space_tex,
+                space_tex
+        );
+
+        shaders.setMaterialColor(MyGLRenderer.lightgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
+        icosphere_div4.translate(1.5f, 1.25f, -7.5f);
+        icosphere_div4.rotate(90.f, 1.f, 0.f, 0.f);
+        icosphere_div4.rotate(dynamic_angle, 0.f, 0.f, 1.f);
+        icosphere_div4.draw(shaders, jupiter_tex);
+
+        shaders.setMaterialColor(MyGLRenderer.darkgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
+        icosphere_div0.translate(1.5f, 1.25f, -7.5f);
+        icosphere_div0.rotate(20.f, 0.f, 0.f, 1.f);
+        icosphere_div0.rotate(2*dynamic_angle, 0.f, 1.f, 0.f);
+        icosphere_div0.translate(1.2f, 0.f, 0.f);
+        icosphere_div0.scale(0.05f, 0.05f, 0.05f);
+        icosphere_div0.draw(shaders, stone_tex);
+
+        shaders.setMaterialColor(MyGLRenderer.darkgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
+        icosphere_div0.translate(0.f, 0.2f, 0.f);
+        icosphere_div0.draw(shaders, rust_tex);
+
+        shaders.setMaterialColor(MyGLRenderer.lightgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
+        icosphere_div4.setModelView(modelviewmatrix);
+        icosphere_div4.translate(-1.5f, 1.25f, -7.5f);
+        icosphere_div4.rotate(90.f, 1.f, 0.f, 0.f);
+        icosphere_div4.rotate(dynamic_angle, 0.f, 0.f, 1.f);
+        icosphere_div4.scale(0.5f, 0.5f, 0.5f);
+        icosphere_div4.draw(shaders, earth_tex);
+
+        shaders.setMaterialColor(MyGLRenderer.lightgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
+        icosphere_div4.translate(2.f, 0.f, 0.f);
+        icosphere_div4.scale(0.25f, 0.25f, 0.25f);
+        icosphere_div4.rotate(-2*dynamic_angle, 0.f, 0.f, 1.f);
+        icosphere_div4.draw(shaders, stone_tex);
+
+        shaders.setMaterialColor(MyGLRenderer.lightgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
+        eden.translate(0.f, 1.5f, -8.f);
+        eden.scale(0.1f, 0.1f, 0.1f);
+        eden.draw(shaders, eden_tex);
+
+        shaders.setMaterialColor(MyGLRenderer.darkgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(1000);
+        support.setModelView(modelviewmatrix);
+        support.translate(-3.f, 0.f, -5.9f);
+        support.scale(6.f, 0.2f, 0.2f);
+        support.draw(shaders, stone_tex);
+
+        shaders.setMaterialColor(MyGLRenderer.glass);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(10000);
+        glass.setModelView(modelviewmatrix);
+        glass.translate(-3.f, 0.f, -6.f);
+        glass.scale(6.f, 3.f, 1.f);
+        glass.draw(shaders, marble2_tex);
+
+
+        // Room 3 - Legends //
+        room.rotate(90, 0.f,1.f,0.f);
+        room.translate(6.f,0.f, 6.f);
+
+        room.draw(
+                shaders,
+                MyGLRenderer.white_alpha,
+                MyGLRenderer.darkgray,
+                MyGLRenderer.lightgray,
+                marble2_tex,
+                sky_above_tex,
+                ruin_tex
+        );
+
+        shaders.setMaterialColor(MyGLRenderer.lightgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
+        icosphere_div2.setModelView(modelviewmatrix);
+        icosphere_div2.translate(-9.f, 1.5f, 3.f);
+        icosphere_div2.scale(1.5f, 1.5f, 1.5f);
+        icosphere_div2.draw(shaders, ruin_tex);
+
+        shaders.setMaterialColor(MyGLRenderer.lightgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
+        icosphere_div2.translate(0.f, 0.f, -4.f);
+        icosphere_div2.draw(shaders, ruin_tex);
+
+        shaders.setMaterialColor(MyGLRenderer.darkgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
+        cube.translate(-7.9f, 0.f, 0.5f);
+        cube.scale(0.2f, 0.25f, 1.f);
+        cube.draw(shaders, tiles1_tex);
+
+        shaders.setMaterialColor(MyGLRenderer.lightgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
+        drk_sword.translate(-7.8f, 1.5f, 0.f);
+        drk_sword.rotate(180.f, 1.f, 0.f, 1.f);
+        drk_sword.draw(shaders, drk_sword_tex);
+
+        shaders.setMaterialColor(MyGLRenderer.lightgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
+        drk_sword_lux.translate(-8.9f, 1.5f, -1.47f);
+        drk_sword_lux.rotate(180.f, 1.f, 0.f, 0.f);
+        drk_sword_lux.rotate(-45.f, 0.f, 1.f, 0.f);
+        drk_sword_lux.rotate(-10.f, 1.f, 0.f, 0.f);
+        drk_sword_lux.draw(shaders, rust_tex);
+
+        shaders.setMaterialColor(MyGLRenderer.darkgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(1000);
+        support.setModelView(modelviewmatrix);
+        support.translate(-5.9f, 0.f, -3.f);
+        support.rotate(-90.f, 0.f, 1.f, 0.f);
+        support.scale(6.f, 0.2f, 0.2f);
+        support.draw(shaders, stone_tex);
+
+        shaders.setMaterialColor(MyGLRenderer.glass);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(10000);
+        glass.setModelView(modelviewmatrix);
+        glass.translate(-5.8f, 0.f, 3.f);
+        glass.rotate(90.f, 0.f, 1.f, 0.f);
+        glass.scale(6.f, 3.f, 1.f);
+        glass.draw(shaders, marble2_tex);
+
+
+        // Room 4 - Beach //
+        room.rotate(180, 0.f,1.f,0.f);
+        room.translate(0.f,0.f, 12.f);
+
+        room.draw(
+                shaders,
+                MyGLRenderer.white_alpha,
+                MyGLRenderer.white,
+                MyGLRenderer.lightgray,
+                beach_tex,
+                sky_above_tex,
+                sky_tex
+        );
+
         shaders.setMaterialColor(MyGLRenderer.lightgray);
         shaders.setMaterialSpecular(SPECULAR_LIGHT);
         shaders.setMaterialShininess(1000);
-        ball1.draw(shaders, stone_tex);
+        support.setModelView(modelviewmatrix);
+        support.translate(7.4f, 1.54f, 3.1f);
+        support.scale(0.2f, 0.2f, 0.5f);
+        support.draw(shaders, stone_tex);
+
+        shaders.setMaterialColor(MyGLRenderer.lightgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
+        torus_ring.translate(7.5f, 1.5f, 2.8f);
+        torus_ring.rotate(-90.f, 1.f, 0.f, 0.f);
+        torus_ring.scale(0.25f, 0.2f, 0.25f);
+        torus_ring.draw(shaders, buoy_tex);
+
+        shaders.setMaterialColor(MyGLRenderer.lightgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(100);
+        ball1.draw(shaders, beachball_tex);
 
         shaders.setMaterialColor(MyGLRenderer.lightgray);
         shaders.setMaterialSpecular(SPECULAR_LIGHT);
         shaders.setMaterialShininess(100);
         ball2.draw(shaders, basketball_tex);
 
-
-        //OBJ
         shaders.setMaterialColor(MyGLRenderer.lightgray);
         shaders.setMaterialSpecular(SPECULAR_LIGHT);
-        shaders.setMaterialShininess(100);
-        drk_sword.translate(-2.0F,1.8F, 2.9F);
-        drk_sword.rotate(180.0F, 0.0F, 0.0F, 1.0F);
-        drk_sword.draw(shaders, drk_sword_tex);
+        shaders.setMaterialShininess(1000);
+        support.setModelView(modelviewmatrix);
+        support.translate(7.f, 0.f, -1.f);
+        support.scale(1.f, 0.5f, 1.f);
+        support.draw(shaders, wall_tex);
 
         shaders.setMaterialColor(MyGLRenderer.lightgray);
         shaders.setMaterialSpecular(SPECULAR_LIGHT);
         shaders.setMaterialShininess(1000);
-        drk_sword_lux.translate(-1.0F,1.8F, 2.9F);
-        drk_sword_lux.rotate(180.0F, 0.0F, 0.0F, 1.0F);
-        drk_sword_lux.draw(shaders, rust_tex);
+        torus_ring.setModelView(modelviewmatrix);
+        torus_ring.translate(7.6f, 0.6f, -1.6f);
+        torus_ring.scale(0.1f, 0.1f, 0.1f);
+        torus_ring.draw(shaders, donut_tex);
 
         shaders.setMaterialColor(MyGLRenderer.lightgray);
         shaders.setMaterialSpecular(SPECULAR_LIGHT);
-        shaders.setMaterialShininess(100);
-        cow.translate(1.8F, 0.91F, 1.8F);
-        cow.rotate(135.F, 0.F, 1.F, 0.F);
-        cow.scale(0.25F, 0.25f, 0.25f);
-        cow.draw(shaders);
-
-        shaders.setMaterialColor(MyGLRenderer.lightgray);
-        shaders.setMaterialSpecular(SPECULAR_LIGHT);
-        shaders.setMaterialShininess(100);
-        toy_chest.translate(-1.5F,0.5F, 2.65F);
-        toy_chest.rotate(180.0F, 0.0F, 1.0F, 0.0F);
-        toy_chest.draw(shaders, toy_chest_tex);
-
-        shaders.setMaterialColor(MyGLRenderer.lightgray);
-        shaders.setMaterialSpecular(SPECULAR_LIGHT);
-        shaders.setMaterialShininess(100);
-        turtle.translate(-2.65F, 1.96F, -3.35F);
-        turtle.rotate(135.0F, 0.0F, 1.0F, 0.0F);
-        turtle.draw(shaders, turtle_tex);
-
-        shaders.setMaterialColor(MyGLRenderer.lightgray);
-        shaders.setMaterialSpecular(SPECULAR_LIGHT);
-        shaders.setMaterialShininess(100);
-        pig.translate(1.925F, 0.F, -4.065F);
-        pig.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
-        pig.scale(4.F, 4.F, 4.F);
-        pig.draw(shaders, pig_tex);
-
-        shaders.setMaterialColor(MyGLRenderer.lightgray);
-        shaders.setMaterialSpecular(SPECULAR_LIGHT);
-        shaders.setMaterialShininess(100);
-        eden.translate(0.F, 1.F, -3.F);
-        eden.scale(0.2F, 0.2F, 0.2F);
-        eden.draw(shaders, eden_tex);
-
-
-        //Square
-        shaders.setMaterialColor(MyGLRenderer.lightgray);
-        shaders.setMaterialSpecular(SPECULAR_LIGHT);
-        shaders.setMaterialShininess(100);
-        support.translate(-1.75F, 0.0F, 2.4F);
-        support.rotate(-90.0F, 0.0F, 1.0F, 0.0F);
-        support.scale(0.5F, 0.5F, 0.5F);
-        support.draw(shaders, stone_tex);
-
-        shaders.setMaterialColor(MyGLRenderer.blue);
-        shaders.setMaterialSpecular(SPECULAR_LIGHT);
-        shaders.setMaterialShininess(100);
-        cube.translate(-2.9F, 0.0F, -3.1F);
-        cube.scale(0.8F, 0.8F, 0.8F);
-        cube.draw(shaders, wall_tex);
-
-        shaders.setMaterialColor(MyGLRenderer.yellow);
-        shaders.setMaterialSpecular(SPECULAR_LIGHT);
-        shaders.setMaterialShininess(100);
-        cube.translate(-0.0F, 1.0F, 0.0F);
-        cube.scale(0.8F, 0.8F, 0.8F);
-        cube.draw(shaders, wall_tex);
-
-        shaders.setMaterialColor(MyGLRenderer.green);
-        shaders.setMaterialSpecular(SPECULAR_LIGHT);
-        shaders.setMaterialShininess(100);
-        cube.translate(-0.0F, 1.0F, 0.0F);
-        cube.scale(0.8F, 0.8F, 0.8F);
-        cube.draw(shaders, wall_tex);
-
-
-        //Icosphere
-        shaders.setMaterialColor(MyGLRenderer.lightgray);
-        shaders.setMaterialSpecular(SPECULAR_LIGHT);
-        shaders.setMaterialShininess(100);
-        icosphere_div0.translate(-2.F, 1.25F, -7.F);
-        icosphere_div0.scale(0.75F, 0.75F, 0.75F);
-        icosphere_div0.draw(shaders);
-
-        shaders.setMaterialColor(MyGLRenderer.lightgray);
-        shaders.setMaterialSpecular(SPECULAR_LIGHT);
-        shaders.setMaterialShininess(100);
-        icosphere_div2.translate(0.F, 1.25F, -7.F);
-        icosphere_div2.scale(0.75F, 0.75F, 0.75F);
-        icosphere_div2.draw(shaders, beachball_tex);
-
-        shaders.setMaterialColor(MyGLRenderer.lightgray);
-        shaders.setMaterialSpecular(SPECULAR_LIGHT);
-        shaders.setMaterialShininess(100);
-        icosphere_div4.translate(2.F, 1.25F, -7.F);
-        icosphere_div4.scale(0.75F, 0.75F, 0.75F);
-        icosphere_div4.draw(shaders, beachball_tex);
-
-
-        //Torus
-        shaders.setMaterialColor(MyGLRenderer.lightgray);
-        shaders.setMaterialSpecular(SPECULAR_LIGHT);
-        shaders.setMaterialShininess(100);
-        torus_ring.translate(-2.2F, 0.25F, -2.F);
-        torus_ring.scale(0.25F,0.25F, 0.25F);
+        shaders.setMaterialShininess(1000);
+        torus_ring.translate(-3.f, 1.f, 3.f);
+        torus_ring.rotate(25.f, 1.f, 0.f, 1.f);
         torus_ring.draw(shaders, donut_tex);
 
         shaders.setMaterialColor(MyGLRenderer.lightgray);
         shaders.setMaterialSpecular(SPECULAR_LIGHT);
         shaders.setMaterialShininess(100);
-        torus_horn.translate(-2.2F, 0.25F, -0.5F);
-        torus_horn.scale(0.25F,0.25F, 0.25F);
-        torus_horn.draw(shaders, donut_tex);
+        toy_chest.translate(6.5f, 0.f, -2.5f);
+        toy_chest.rotate(-45.f, 0.f, 1.f, 0.f);
+        toy_chest.draw(shaders, toy_chest_tex);
 
+        shaders.setMaterialColor(MyGLRenderer.darkgray);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(1000);
+        support.setModelView(modelviewmatrix);
+        support.translate(5.9f, 0.f, 3.f);
+        support.rotate(90.f, 0.f, 1.f, 0.f);
+        support.scale(6.f, 0.2f, 0.2f);
+        support.draw(shaders, stone_tex);
+
+        shaders.setMaterialColor(MyGLRenderer.glass);
+        shaders.setMaterialSpecular(SPECULAR_LIGHT);
+        shaders.setMaterialShininess(10000);
+        glass.setModelView(modelviewmatrix);
+        glass.translate(5.8f, 0.f, -3.f);
+        glass.rotate(-90.f, 0.f, 1.f, 0.f);
+        glass.scale(6.f, 3.f, 1.f);
+        glass.draw(shaders, marble2_tex);
+
+
+        // No Textures ?
         shaders.setMaterialColor(MyGLRenderer.lightgray);
         shaders.setMaterialSpecular(SPECULAR_LIGHT);
-        shaders.setMaterialShininess(100);
-        torus_self_intersecting_spindle.translate(-2.2F, 0.5F, 1.F);
-        torus_self_intersecting_spindle.scale(0.25F,0.25F, 0.25F);
-        torus_self_intersecting_spindle.draw(shaders, donut_tex);
+        shaders.setMaterialShininess(1000);
+        cube.setModelView(modelviewmatrix);
+        cube.translate(-2.9f, 0.f, 2.9f);
+        cube.draw(shaders, default_tex);
+
+        cube.translate(0.f, 1.f, 0.f);
+        cube.scale(0.8f, 0.8f, 0.8f);
+        cube.draw(shaders, default_tex);
+
+        cube.translate(0.f, 1.f, 0.f);
+        cube.scale(0.8f, 0.8f, 0.8f);
+        cube.draw(shaders, default_tex);
     }
 }

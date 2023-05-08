@@ -460,7 +460,7 @@ public class Room {
     {
         shaders.setModelViewMatrix(modelviewroom);
 
-        // Enable lending
+        // Enable blending
         GLES20.glEnable(GLES20.GL_BLEND);
 
         // Vertex //
@@ -554,13 +554,16 @@ public class Room {
      * Draw the room
      * @param shaders : Shader to represent the mesh
      * @param color_floor : the color of the floor
-     * @param color_ceilling : the color of the ceilling
+     * @param color_ceiling : the color of the ceilling
      * @param color_wall : color of the wall
+     * @param floor_tex :id of the floor texture to draw
+     * @param ceiling_tex : id of the ceiling texture to draw
+     * @param wall_tex : id of the wall texture to draw
      */
     public void draw(
             final LightingShaders shaders,
             float[] color_floor,
-            float[] color_ceilling,
+            float[] color_ceiling,
             float[] color_wall,
             int floor_tex,
             int ceiling_tex,
@@ -575,7 +578,7 @@ public class Room {
         shaders.setMaterialShininess(100);
         drawFloor(shaders, floor_tex);
 
-        shaders.setMaterialColor(color_ceilling);
+        shaders.setMaterialColor(color_ceiling);
         shaders.setMaterialSpecular(MyGLRenderer.white);
         shaders.setMaterialShininess(100);
         drawCeiling(shaders, ceiling_tex);

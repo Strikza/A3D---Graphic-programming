@@ -13,8 +13,8 @@ public class Torus extends Mesh {
      * @param R : major radius (distance from the centre of the torus to the centre of the tube)
      * @param r : minor radius (radius of the tube)
      */
-    public Torus(int slice, int quarter, float R, float r, boolean hasTexture){
-        super(hasTexture);
+    public Torus(int slice, int quarter, float R, float r){
+        super();
 
         slice = Math.max(slice, 3);
         quarter = Math.max(quarter, 3);
